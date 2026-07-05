@@ -1,6 +1,7 @@
 import { Menu, LogOut, Bell, ChevronDown } from 'lucide-react';
 import { Section } from './Layout';
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { ThemeToggle } from './ThemeToggle';
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,8 @@ interface NavigationProps {
 }
 
 export const Navigation = ({ activeSection, onSectionChange, isAuthenticated, onLogout }: NavigationProps) => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState<null | 'practice' | 'resource' | 'mydebate'>(null);
   const closeTimeout = useRef<number | null>(null);
@@ -43,20 +46,17 @@ export const Navigation = ({ activeSection, onSectionChange, isAuthenticated, on
     if (isAuthenticated) {
       onSectionChange('tournament-home');
     } else {
-      window.location.href = '/tournament';
+      navigate('/tournament');
     }
   };
 
   const goToAnnouncements = () => {
+    if (location.pathname.startsWith('/announcements')) {
+      return;
+    }
     localStorage.setItem('ann_last_seen_ts', Date.now().toString());
     setHasNewAnnouncements(false);
-    if (window.location.pathname === '/') {
-      window.location.href = '/announcements';
-    } else if (window.location.pathname.startsWith('/announcements')) {
-      return;
-    } else {
-      window.location.href = '/announcements';
-    }
+    navigate('/announcements');
   };
 
   const handleOpen = (menu: 'practice' | 'resource' | 'mydebate') => {
