@@ -1,0 +1,344 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Oxymorona Debate — Premium Design System */
+
+@layer base {
+  :root {
+    --background: 36 33% 97%;
+    --foreground: 355 45% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 355 45% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 355 45% 12%;
+
+    --primary: 355 72% 34%;
+    --primary-foreground: 36 33% 98%;
+
+    --secondary: 43 90% 48%;
+    --secondary-foreground: 355 45% 12%;
+
+    --muted: 36 20% 92%;
+    --muted-foreground: 355 15% 40%;
+
+    --accent: 355 65% 42%;
+    --accent-foreground: 36 33% 98%;
+
+    --destructive: 0 72% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 36 18% 88%;
+    --input: 36 18% 88%;
+    --ring: 355 72% 34%;
+
+    --radius: 0.625rem;
+
+    --debate-blue: 355 72% 34%;
+    --debate-gold: 43 90% 48%;
+    --debate-navy: 355 55% 18%;
+    --debate-light-blue: 355 60% 45%;
+
+    --surface-elevated: 0 0% 100%;
+    --surface-overlay: 36 33% 97% / 0.85;
+  }
+
+  .dark {
+    --background: 355 30% 7%;
+    --foreground: 36 25% 94%;
+
+    --card: 355 25% 11%;
+    --card-foreground: 36 25% 94%;
+
+    --popover: 355 25% 11%;
+    --popover-foreground: 36 25% 94%;
+
+    --primary: 355 65% 52%;
+    --primary-foreground: 355 30% 7%;
+
+    --secondary: 43 85% 55%;
+    --secondary-foreground: 355 30% 7%;
+
+    --muted: 355 20% 16%;
+    --muted-foreground: 36 15% 68%;
+
+    --accent: 355 55% 48%;
+    --accent-foreground: 36 25% 98%;
+
+    --destructive: 0 62% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 355 18% 20%;
+    --input: 355 18% 20%;
+    --ring: 355 65% 52%;
+
+    --debate-blue: 355 65% 52%;
+    --debate-gold: 43 85% 55%;
+    --debate-navy: 355 40% 14%;
+    --debate-light-blue: 355 55% 58%;
+
+    --surface-elevated: 355 22% 13%;
+    --surface-overlay: 355 30% 7% / 0.92;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-playfair tracking-tight;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+}
+
+@layer components {
+  .glass-nav {
+    @apply bg-card/80 backdrop-blur-xl border-b border-border/60 shadow-sm;
+  }
+
+  .glass-card {
+    @apply bg-card/90 backdrop-blur-md border border-border/70 shadow-lg;
+  }
+
+  .page-shell {
+    @apply relative min-h-screen;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%, hsl(var(--primary) / 0.08), transparent),
+      radial-gradient(ellipse 60% 40% at 100% 100%, hsl(var(--secondary) / 0.06), transparent);
+  }
+
+  .dark .page-shell {
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%, hsl(var(--primary) / 0.12), transparent),
+      radial-gradient(ellipse 60% 40% at 100% 100%, hsl(var(--secondary) / 0.05), transparent);
+  }
+
+  .section-label {
+    @apply text-xs font-semibold uppercase tracking-widest text-primary;
+  }
+
+  .selection-card {
+    @apply p-4 md:p-6 rounded-xl border-2 border-border bg-card text-left transition-all duration-200;
+    @apply hover:border-primary/40 hover:shadow-md;
+  }
+
+  .selection-card-active {
+    @apply border-primary bg-primary/5 shadow-md ring-1 ring-primary/20;
+  }
+
+  .announcement-card {
+    @apply min-w-[20rem] max-w-[20rem] p-6 rounded-xl border border-border bg-card shadow-sm;
+    @apply hover:shadow-md hover:border-primary/30 transition-all duration-300;
+    scroll-snap-align: start;
+  }
+
+  .team-card {
+    @apply p-6 md:p-8 rounded-2xl border border-border bg-card shadow-sm;
+    @apply hover:shadow-lg hover:border-primary/25 transition-all duration-300 hover:-translate-y-0.5;
+  }
+
+  .hero-panel {
+    @apply max-w-xl md:max-w-2xl p-6 md:p-10 rounded-2xl glass-card;
+  }
+
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100];
+    @apply focus:px-4 focus:py-2 focus:rounded-md focus:bg-primary focus:text-primary-foreground;
+  }
+}
+
+@layer utilities {
+  .debate-gradient {
+    background: linear-gradient(135deg, hsl(var(--debate-blue)) 0%, hsl(var(--debate-light-blue)) 100%);
+  }
+
+  .gold-gradient {
+    background: linear-gradient(135deg, hsl(var(--debate-gold)) 0%, hsl(38 92% 50%) 100%);
+  }
+
+  .text-gradient-brand {
+    @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
+  }
+
+  .hover-lift {
+    @apply transition-transform duration-300 hover:-translate-y-0.5;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out forwards;
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.6s ease-out forwards;
+  }
+
+  .animate-stagger-1 { animation-delay: 0.1s; }
+  .animate-stagger-2 { animation-delay: 0.2s; }
+  .animate-stagger-3 { animation-delay: 0.3s; }
+
+  .opacity-0-start {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .animate-fade-in,
+  .animate-fade-in-up,
+  .hover-lift,
+  .team-card,
+  .announcement-card {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* React Quill — theme-aware editor */
+.ql-toolbar.ql-snow {
+  @apply border-border bg-muted/50 rounded-t-md;
+}
+
+.ql-container.ql-snow {
+  @apply border-border bg-card text-foreground rounded-b-md;
+}
+
+.dark .ql-snow .ql-stroke {
+  stroke: hsl(var(--foreground));
+}
+
+.dark .ql-snow .ql-fill {
+  fill: hsl(var(--foreground));
+}
+
+.dark .ql-snow .ql-picker {
+  color: hsl(var(--foreground));
+}
+
+.dark .ql-snow .ql-picker-options {
+  @apply bg-popover border-border;
+}
+
+.dark .ql-editor.ql-blank::before {
+  color: hsl(var(--muted-foreground));
+}
+
+/* Rich content inside announcements (legacy) */
+.prose-announcement img {
+  @apply rounded-lg max-w-full h-auto my-3;
+}
+
+.prose-announcement a {
+  @apply text-primary underline underline-offset-2;
+}
+
+/* Long-form announcement article reading experience */
+.prose-article {
+  @apply text-base md:text-lg text-foreground/90;
+  line-height: 1.85;
+}
+
+.prose-article > * + * {
+  margin-top: 1.25em;
+}
+
+.prose-article h2 {
+  @apply text-2xl md:text-3xl font-bold font-playfair text-foreground;
+  margin-top: 2.25em;
+  margin-bottom: 0.75em;
+  line-height: 1.3;
+}
+
+.prose-article h3 {
+  @apply text-xl md:text-2xl font-semibold font-playfair text-foreground;
+  margin-top: 1.75em;
+  margin-bottom: 0.5em;
+  line-height: 1.35;
+}
+
+.prose-article p {
+  margin-top: 1.25em;
+  margin-bottom: 0;
+}
+
+.prose-article p:first-child {
+  margin-top: 0;
+}
+
+.prose-article strong,
+.prose-article b {
+  @apply font-semibold text-foreground;
+}
+
+.prose-article a {
+  @apply text-primary underline underline-offset-4 decoration-primary/40 hover:decoration-primary transition-colors;
+}
+
+.prose-article ul,
+.prose-article ol {
+  @apply pl-6 my-6 space-y-2;
+}
+
+.prose-article ul {
+  @apply list-disc;
+}
+
+.prose-article ol {
+  @apply list-decimal;
+}
+
+.prose-article li {
+  @apply pl-1;
+  line-height: 1.75;
+}
+
+.prose-article li::marker {
+  @apply text-primary;
+}
+
+.prose-article blockquote {
+  @apply border-l-4 border-primary/40 pl-5 italic text-muted-foreground my-8;
+}
+
+.prose-article img {
+  @apply rounded-xl max-w-full h-auto my-8 shadow-md;
+}
+
+.prose-article hr {
+  @apply border-border my-10;
+}

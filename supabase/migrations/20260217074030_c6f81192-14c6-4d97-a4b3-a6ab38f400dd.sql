@@ -1,0 +1,1 @@
+ALTER TABLE public.posts ADD COLUMN quoted_post_id UUID REFERENCES public.posts(id) ON DELETE SET NULL;
