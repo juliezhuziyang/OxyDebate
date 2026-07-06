@@ -33,6 +33,8 @@ interface FeedbackData {
   timing: string;
   timeUsed: string;
   totalTime: string;
+  aiUnavailable?: boolean;
+  aiError?: string;
 }
 
 export const PracticeSession = ({ config, onBack }: PracticeSessionProps) => {
@@ -261,14 +263,21 @@ export const PracticeSession = ({ config, onBack }: PracticeSessionProps) => {
     return { timeUsedSeconds, totalTimeSeconds };
   };
 
-  const buildFeedbackFromTranscript = (speechTranscript: string): FeedbackData => {
+  const buildFeedbackFromTranscript = (
+    speechTranscript: string,
+    options?: { aiUnavailable?: boolean; aiError?: string }
+  ): FeedbackData => {
     const { timeUsedSeconds, totalTimeSeconds } = getSessionTiming();
-    return buildTranscriptBasedFeedback({
-      transcript: speechTranscript,
-      timeUsedSeconds,
-      totalTimeSeconds,
-      skill: config.skill,
-    });
+    return {
+      ...buildTranscriptBasedFeedback({
+        transcript: speechTranscript,
+        timeUsedSeconds,
+        totalTimeSeconds,
+        skill: config.skill,
+      }),
+      aiUnavailable: options?.aiUnavailable,
+      aiError: options?.aiError,
+    };
   };
 
   const startSession = async () => {
@@ -374,7 +383,13 @@ export const PracticeSession = ({ config, onBack }: PracticeSessionProps) => {
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        const contextMessage =
+          typeof error === 'object' && error !== null && 'context' in error
+            ? String((error as { context?: { body?: string } }).context?.body ?? '')
+            : '';
+        throw new Error(data?.error || contextMessage || error.message || 'AI feedback service unavailable');
+      }
       if (data?.error) throw new Error(data.error);
 
       if (typeof data?.score === 'number') {
@@ -399,7 +414,11 @@ export const PracticeSession = ({ config, onBack }: PracticeSessionProps) => {
       }
     } catch (error) {
       console.error('Error generating AI feedback:', error);
-      setFeedback(buildFeedbackFromTranscript(finalTranscript));
+      const aiError = error instanceof Error ? error.message : 'AI feedback service unavailable';
+      setFeedback(buildFeedbackFromTranscript(finalTranscript, {
+        aiUnavailable: true,
+        aiError,
+      }));
     } finally {
       setLoadingFeedback(false);
     }
@@ -583,6 +602,16 @@ export const PracticeSession = ({ config, onBack }: PracticeSessionProps) => {
               {loadingFeedback ? <Loader2 className="text-white animate-spin" size={24} /> : <Bot className="text-white" size={24} />}
             </div>
             <div className="flex-1 space-y-6">
+              {feedback.aiUnavailable && (
+                <div className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                  <p className="font-medium">AI coach is unavailable right now</p>
+                  <p className="mt-1 text-amber-800">
+                    {feedback.aiError?.includes('OpenAI API key')
+                      ? 'The OpenAI API key is not configured on the server. An admin needs to add OPENAI_API_KEY in Supabase Edge Function secrets.'
+                      : (feedback.aiError || 'Showing a basic automated analysis instead of full AI feedback.')}
+                  </p>
+                </div>
+              )}
               <div className="flex items-center justify-between">
                 <h3 className="text-2xl font-bold text-accent">AI Coach Analysis</h3>
                 <div className="flex items-center space-x-2 bg-accent/10 rounded-lg px-4 py-2">
