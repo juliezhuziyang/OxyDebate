@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { Crown, Medal, Award, Trophy, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Crown, Medal, Award, Trophy } from 'lucide-react';
 import { PageLoader } from '@/components/ui/page-loader';
 import { cn } from '@/lib/utils';
 
@@ -11,7 +11,6 @@ interface RankingPlayer {
   display_name: string;
   username: string;
   avatar_url?: string;
-  rating: number;
   total_sessions: number;
   total_practice_time: number;
   wins: number;
@@ -86,7 +85,7 @@ export const RealRankings = () => {
           </h1>
         </div>
         <p className="text-muted-foreground max-w-2xl mx-auto">
-          Compete with debaters worldwide. Rankings are based on performance, practice sessions, and overall rating.
+          Climb the leaderboard through practice. Rankings use completed sessions — AI and Global — with practice time as the tiebreaker.
         </p>
       </div>
 
@@ -134,16 +133,15 @@ export const RealRankings = () => {
                     <tr>
                       <th className="text-left p-4 font-medium">Rank</th>
                       <th className="text-left p-4 font-medium">Player</th>
-                      <th className="text-center p-4 font-medium">Rating</th>
                       <th className="text-center p-4 font-medium">Sessions</th>
-                      <th className="text-center p-4 font-medium">Win Rate</th>
                       <th className="text-center p-4 font-medium">Practice Time</th>
+                      <th className="text-center p-4 font-medium">Win Rate</th>
                     </tr>
                   </thead>
                   <tbody>
                     {rankings.length === 0 ? (
                       <tr>
-                        <td colSpan={6} className="text-center py-8 text-muted-foreground">
+                        <td colSpan={5} className="text-center py-8 text-muted-foreground">
                           No rankings available yet. Start practicing to join the leaderboard!
                         </td>
                       </tr>
@@ -174,13 +172,11 @@ export const RealRankings = () => {
                               </div>
                             </div>
                           </td>
-                          <td className="p-4 text-center">
-                            <div className="flex items-center justify-center gap-1">
-                              <span className="font-semibold">{player.rating}</span>
-                            </div>
-                          </td>
                           <td className="p-4 text-center font-medium">
                             {player.total_sessions}
+                          </td>
+                          <td className="p-4 text-center text-muted-foreground">
+                            {formatTime(player.total_practice_time)}
                           </td>
                           <td className="p-4 text-center">
                             <span className={cn(
@@ -190,9 +186,6 @@ export const RealRankings = () => {
                             )}>
                               {player.win_rate}%
                             </span>
-                          </td>
-                          <td className="p-4 text-center text-muted-foreground">
-                            {formatTime(player.total_practice_time)}
                           </td>
                         </tr>
                       ))
@@ -213,10 +206,6 @@ export const RealRankings = () => {
                   Your Stats
                 </h3>
                 <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Current Rating</span>
-                    <span className="font-semibold">{profile.rating}</span>
-                  </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Total Sessions</span>
                     <span className="font-semibold">{profile.total_sessions}</span>
@@ -250,8 +239,10 @@ export const RealRankings = () => {
                   <span className="font-semibold">{rankings.length}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Top Rating</span>
-                  <span className="font-semibold">{rankings[0]?.rating || 1000}</span>
+                  <span className="text-muted-foreground">Most Practice Time</span>
+                  <span className="font-semibold">
+                    {formatTime(Math.max(...rankings.map(p => p.total_practice_time), 0))}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Most Sessions</span>

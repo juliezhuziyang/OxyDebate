@@ -104,7 +104,7 @@ export const PracticeHome = ({ onNavigate }: { onNavigate: (s: Section) => void 
       {
         id: 'rankings',
         title: 'Rankings',
-        description: 'See where you stand among the global community. Track your rating, win streaks, and climb the leaderboard as you improve.',
+        description: 'See where you stand among the global community. Rankings reflect completed AI and Global practice sessions.',
         image: rankingsImg,
       },
     ]}

@@ -871,7 +871,6 @@ export type Database = {
           id: string | null
           losses: number | null
           rank: number | null
-          rating: number | null
           total_practice_time: number | null
           total_sessions: number | null
           user_id: string | null
