@@ -7,10 +7,10 @@ import { RealGlobalPractice } from './RealGlobalPractice';
 import { RealRankings } from './RealRankings';
 import { Posts } from './Posts';
 import { PageLoader } from '@/components/ui/page-loader';
-import { ComingSoon } from '@/components/ComingSoon';
 import { MyProgress } from '@/components/MyProgress';
 import { Feedback } from '@/components/Feedback';
 import { DebateGuide } from '@/components/DebateGuide';
+import { Podcasts } from '@/components/Podcasts';
 import { JoinUs } from '@/components/JoinUs';
 import Tournament from '@/components/Tournament';
 import { PracticeHome, TournamentHome, ResourceHome, MyDebateHome } from './SectionHome';
@@ -21,6 +21,7 @@ export type Section = 'practice-home' | 'tournament-home' | 'resource-home' | 'm
 export const Layout = () => {
   const [activeSection, setActiveSection] = useState<Section>('practice-home');
   const [guideId, setGuideId] = useState<string | null>(null);
+  const [podcastId, setPodcastId] = useState<string | null>(null);
   const { user, loading, signOut } = useAuth();
 
   useEffect(() => {
@@ -33,19 +34,26 @@ export const Layout = () => {
     const params = new URLSearchParams(window.location.search);
     const sectionParam = params.get('section') as Section | null;
     const guideParam = params.get('guide');
+    const podcastParam = params.get('podcast');
     if (sectionParam) {
       setActiveSection(sectionParam);
     }
     setGuideId(guideParam);
+    setPodcastId(podcastParam);
   }, []);
 
-  const syncUrl = (section: Section, guide: string | null) => {
+  const syncUrl = (section: Section, options?: { guide?: string | null; podcast?: string | null }) => {
     const url = new URL(window.location.href);
     url.searchParams.set('section', section);
-    if (guide) {
-      url.searchParams.set('guide', guide);
+    if (options?.guide) {
+      url.searchParams.set('guide', options.guide);
     } else {
       url.searchParams.delete('guide');
+    }
+    if (options?.podcast) {
+      url.searchParams.set('podcast', options.podcast);
+    } else {
+      url.searchParams.delete('podcast');
     }
     window.history.pushState({}, '', url.toString());
   };
@@ -53,13 +61,22 @@ export const Layout = () => {
   const handleSectionChange = (section: Section) => {
     setActiveSection(section);
     setGuideId(null);
-    syncUrl(section, null);
+    setPodcastId(null);
+    syncUrl(section, { guide: null, podcast: null });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleGuideNavigate = (id: string | null) => {
     setGuideId(id);
-    syncUrl('debate-guide', id);
+    setPodcastId(null);
+    syncUrl('debate-guide', { guide: id, podcast: null });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handlePodcastNavigate = (id: string | null) => {
+    setPodcastId(id);
+    setGuideId(null);
+    syncUrl('global-news', { podcast: id, guide: null });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -96,7 +113,7 @@ export const Layout = () => {
       case 'tournament':
         return <Tournament onBackToHome={() => handleSectionChange('tournament-home')} />;
       case 'global-news':
-        return <ComingSoon title="Global News" message="Stay tuned. This section is coming soon." />;
+        return <Podcasts podcastId={podcastId} onNavigatePodcast={handlePodcastNavigate} />;
       case 'debate-guide':
         return <DebateGuide guideId={guideId} onNavigateGuide={handleGuideNavigate} />;
       case 'join-us':

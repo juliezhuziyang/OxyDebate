@@ -148,8 +148,8 @@ export const Navigation = ({ activeSection, onSectionChange, isAuthenticated, on
               </button>
               {openMenu === 'resource' && (
                 <div className={dropdownClass}>
-                  <button onClick={() => onSectionChange('content')} className={dropdownItemClass}>Posts & Podcasts</button>
-                  <button onClick={() => onSectionChange('global-news')} className={dropdownItemClass}>Global News</button>
+                  <button onClick={() => onSectionChange('content')} className={dropdownItemClass}>Community Posts</button>
+                  <button onClick={() => onSectionChange('global-news')} className={dropdownItemClass}>Podcasts</button>
                   <button onClick={() => onSectionChange('debate-guide')} className={dropdownItemClass}>Debate Guide</button>
                 </div>
               )}
@@ -274,8 +274,8 @@ export const Navigation = ({ activeSection, onSectionChange, isAuthenticated, on
                 Resource
               </button>
               <div className="space-y-0.5 pl-2 border-l-2 border-primary/20">
-                <button onClick={() => { onSectionChange('content'); setIsMobileMenuOpen(false); }} className="block w-full text-left py-2.5 text-sm hover:text-primary transition-colors">Posts & Podcasts</button>
-                <button onClick={() => { onSectionChange('global-news'); setIsMobileMenuOpen(false); }} className="block w-full text-left py-2.5 text-sm hover:text-primary transition-colors">Global News</button>
+                <button onClick={() => { onSectionChange('content'); setIsMobileMenuOpen(false); }} className="block w-full text-left py-2.5 text-sm hover:text-primary transition-colors">Community Posts</button>
+                <button onClick={() => { onSectionChange('global-news'); setIsMobileMenuOpen(false); }} className="block w-full text-left py-2.5 text-sm hover:text-primary transition-colors">Podcasts</button>
                 <button onClick={() => { onSectionChange('debate-guide'); setIsMobileMenuOpen(false); }} className="block w-full text-left py-2.5 text-sm hover:text-primary transition-colors">Debate Guide</button>
               </div>
             </div>

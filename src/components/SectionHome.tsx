@@ -132,19 +132,19 @@ export const TournamentHome = ({ onNavigate }: { onNavigate: (s: Section) => voi
 export const ResourceHome = ({ onNavigate }: { onNavigate: (s: Section) => void }) => (
   <SectionHome
     title="Resources"
-    subtitle="Level up your knowledge with community content, global news, and expert debate guides."
+    subtitle="Level up your knowledge with community posts, podcasts, and expert debate guides."
     heroImage={resourceImg}
     items={[
       {
         id: 'content',
-        title: 'Posts & Podcasts',
-        description: 'Read insightful articles, listen to debate podcasts, and share your own content with the community. A space for ideas and discussion.',
+        title: 'Community Posts',
+        description: 'Share debates, insights, and audio clips with the community. A space for ideas, discussion, and peer learning.',
         image: postsImg,
       },
       {
         id: 'global-news',
-        title: 'Global News',
-        description: 'Stay informed with the latest debate events, competitions, and developments from around the world. Never miss an important update.',
+        title: 'Podcasts',
+        description: 'Watch and listen to Oxymorona podcast episodes — each with YouTube video and optional script to follow along.',
         image: newsImg,
       },
       {

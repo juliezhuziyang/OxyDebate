@@ -228,6 +228,39 @@ export type Database = {
         }
         Relationships: []
       }
+      podcasts: {
+        Row: {
+          created_at: string
+          created_by_user_id: string
+          id: string
+          is_published: boolean
+          script: string | null
+          title: string
+          updated_at: string
+          youtube_url: string
+        }
+        Insert: {
+          created_at?: string
+          created_by_user_id: string
+          id?: string
+          is_published?: boolean
+          script?: string | null
+          title: string
+          updated_at?: string
+          youtube_url: string
+        }
+        Update: {
+          created_at?: string
+          created_by_user_id?: string
+          id?: string
+          is_published?: boolean
+          script?: string | null
+          title?: string
+          updated_at?: string
+          youtube_url?: string
+        }
+        Relationships: []
+      }
       likes: {
         Row: {
           created_at: string
