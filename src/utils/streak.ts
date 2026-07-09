@@ -62,3 +62,55 @@ export function isStreakAtRisk(profile: StreakProfileFields | null | undefined):
   if (streak === 0) return false;
   return profile.last_practice_date === getYesterdayPracticeDate();
 }
+
+const WEEKDAY_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'] as const;
+
+/** Monday–Sunday date strings for the week containing referenceDate */
+export function getCurrentWeekDateStrings(referenceDate = new Date()): string[] {
+  const day = referenceDate.getDay();
+  const mondayOffset = day === 0 ? -6 : 1 - day;
+  const monday = new Date(referenceDate);
+  monday.setHours(12, 0, 0, 0);
+  monday.setDate(referenceDate.getDate() + mondayOffset);
+
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    return getLocalPracticeDate(d);
+  });
+}
+
+export function getWeekdayLabels(): readonly string[] {
+  return WEEKDAY_LABELS;
+}
+
+export function getTodayWeekIndex(referenceDate = new Date()): number {
+  const today = getLocalPracticeDate(referenceDate);
+  const weekDates = getCurrentWeekDateStrings(referenceDate);
+  const index = weekDates.indexOf(today);
+  return index >= 0 ? index : (referenceDate.getDay() + 6) % 7;
+}
+
+/** Last N days ending today — date string per cell (oldest first) */
+export function getRecentDayRange(dayCount: number, referenceDate = new Date()): string[] {
+  return Array.from({ length: dayCount }, (_, i) => {
+    const d = new Date(referenceDate);
+    d.setDate(referenceDate.getDate() - (dayCount - 1 - i));
+    return getLocalPracticeDate(d);
+  });
+}
+
+export function countPracticeDays(practiceDates: Set<string>): number {
+  return practiceDates.size;
+}
+
+export function formatPracticeDateLabel(dateStr: string): string {
+  const [year, month, day] = dateStr.split('-').map(Number);
+  const date = new Date(year, month - 1, day);
+  return date.toLocaleDateString(undefined, {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}

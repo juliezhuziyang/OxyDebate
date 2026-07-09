@@ -12,7 +12,7 @@ import { Announcements } from '@/components/Announcements';
 
 const Index = () => {
   const { user, signOut } = useAuth();
-  const { streak, longestStreak, practicedToday, streakAtRisk } = useStreak();
+  const { streak, longestStreak, practicedToday, streakAtRisk, practiceDates } = useStreak();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -91,7 +91,9 @@ const Index = () => {
                   longestStreak={longestStreak}
                   practicedToday={practicedToday}
                   streakAtRisk={streakAtRisk}
+                  practiceDates={practiceDates}
                   onPractice={() => navigate('/app?section=practice-home')}
+                  onViewDetails={() => navigate('/streak')}
                 />
               </div>
             )}

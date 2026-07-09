@@ -183,6 +183,7 @@ export const Navigation = ({ activeSection, onSectionChange, isAuthenticated, on
                   practicedToday={practicedToday}
                   streakAtRisk={streakAtRisk}
                   size="sm"
+                  onClick={() => navigate('/streak')}
                 />
               )}
 
@@ -224,6 +225,7 @@ export const Navigation = ({ activeSection, onSectionChange, isAuthenticated, on
                 practicedToday={practicedToday}
                 streakAtRisk={streakAtRisk}
                 size="sm"
+                onClick={() => navigate('/streak')}
               />
             )}
             <ThemeToggle />

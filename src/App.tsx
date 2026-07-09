@@ -12,6 +12,7 @@ import NotFound from "./pages/NotFound";
 import AppHome from "./pages/AppHome";
 import AnnouncementsPage from "./pages/AnnouncementsPage";
 import TournamentPage from "./pages/TournamentPage";
+import StreakPage from "./pages/StreakPage";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/app" element={<AppHome />} />
+              <Route path="/streak" element={<StreakPage />} />
               <Route path="/announcements" element={<AnnouncementsPage />} />
               <Route path="/announcements/:id" element={<AnnouncementsPage />} />
               <Route path="/tournament" element={<TournamentPage />} />

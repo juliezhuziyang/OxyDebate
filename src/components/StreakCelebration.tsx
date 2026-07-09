@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Flame } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { StreakWeekView } from '@/components/StreakWeekView';
 
 interface StreakCelebrationProps {
   streak: number;
@@ -75,6 +76,7 @@ interface StreakBadgeProps {
   size?: 'sm' | 'md' | 'lg';
   showLabel?: boolean;
   className?: string;
+  onClick?: () => void;
 }
 
 export const StreakBadge = ({
@@ -84,6 +86,7 @@ export const StreakBadge = ({
   size = 'md',
   showLabel = false,
   className,
+  onClick,
 }: StreakBadgeProps) => {
   const isActive = streak > 0;
   const isLit = practicedToday || isActive;
@@ -100,25 +103,19 @@ export const StreakBadge = ({
     lg: 'h-6 w-6',
   };
 
-  return (
-    <div
-      className={cn(
-        'inline-flex items-center rounded-full font-semibold tabular-nums transition-all',
-        sizeClasses[size],
-        isLit
-          ? 'bg-gradient-to-r from-orange-500/15 to-amber-400/15 text-orange-600 dark:text-orange-400 border border-orange-400/30 shadow-sm'
-          : 'bg-muted/60 text-muted-foreground border border-border',
-        streakAtRisk && !practicedToday && 'ring-2 ring-orange-400/40 animate-streak-pulse',
-        className
-      )}
-      title={
-        streakAtRisk && !practicedToday
-          ? 'Practice today to keep your streak!'
-          : isActive
-            ? `${streak} day streak`
-            : 'Start your streak today'
-      }
-    >
+  const badgeClass = cn(
+    'inline-flex items-center rounded-full font-semibold tabular-nums transition-all',
+    sizeClasses[size],
+    isLit
+      ? 'bg-gradient-to-r from-orange-500/15 to-amber-400/15 text-orange-600 dark:text-orange-400 border border-orange-400/30 shadow-sm'
+      : 'bg-muted/60 text-muted-foreground border border-border',
+    streakAtRisk && !practicedToday && 'ring-2 ring-orange-400/40 animate-streak-pulse',
+    onClick && 'cursor-pointer hover:border-orange-400/50 hover:shadow-md active:scale-[0.98]',
+    className
+  );
+
+  const content = (
+    <>
       <Flame
         className={cn(
           iconSizes[size],
@@ -129,6 +126,41 @@ export const StreakBadge = ({
       />
       <span>{streak}</span>
       {showLabel && <span className="text-xs font-medium uppercase tracking-wide opacity-80">streak</span>}
+    </>
+  );
+
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className={badgeClass}
+        title={
+          streakAtRisk && !practicedToday
+            ? 'Practice today to keep your streak!'
+            : isActive
+              ? `${streak} day streak — view details`
+              : 'Start your streak today'
+        }
+        aria-label="View streak details"
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <div
+      className={badgeClass}
+      title={
+        streakAtRisk && !practicedToday
+          ? 'Practice today to keep your streak!'
+          : isActive
+            ? `${streak} day streak`
+            : 'Start your streak today'
+      }
+    >
+      {content}
     </div>
   );
 };
@@ -138,7 +170,9 @@ interface StreakCardProps {
   longestStreak: number;
   practicedToday: boolean;
   streakAtRisk: boolean;
+  practiceDates: Set<string>;
   onPractice?: () => void;
+  onViewDetails?: () => void;
   className?: string;
 }
 
@@ -147,12 +181,11 @@ export const StreakCard = ({
   longestStreak,
   practicedToday,
   streakAtRisk,
+  practiceDates,
   onPractice,
+  onViewDetails,
   className,
 }: StreakCardProps) => {
-  const weekDays = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-  const todayIndex = (new Date().getDay() + 6) % 7;
-
   return (
     <div className={cn('streak-card', className)}>
       <div className="flex items-start justify-between gap-4 mb-5">
@@ -164,6 +197,7 @@ export const StreakCard = ({
               practicedToday={practicedToday}
               streakAtRisk={streakAtRisk}
               size="lg"
+              onClick={onViewDetails}
             />
             {longestStreak > streak && (
               <span className="text-xs text-muted-foreground">
@@ -177,34 +211,7 @@ export const StreakCard = ({
         </div>
       </div>
 
-      <div className="flex justify-between gap-1 mb-4">
-        {weekDays.map((label, index) => {
-          const isToday = index === todayIndex;
-          const isPast = index < todayIndex;
-          const isDone = practicedToday && isToday;
-          const wasDone = isPast && streak > 0 && (streakAtRisk ? index < todayIndex - 1 : index <= todayIndex - 1);
-
-          return (
-            <div key={`${label}-${index}`} className="flex flex-col items-center gap-1.5 flex-1">
-              <div
-                className={cn(
-                  'w-full max-w-[2rem] aspect-square rounded-full flex items-center justify-center text-[0.65rem] font-bold border-2 transition-colors',
-                  isDone || wasDone
-                    ? 'bg-orange-500 border-orange-500 text-white'
-                    : isToday
-                      ? 'border-orange-400 bg-orange-500/10 text-orange-600'
-                      : 'border-border bg-muted/30 text-muted-foreground'
-                )}
-              >
-                {(isDone || wasDone) && <Flame className="h-3 w-3" fill="currentColor" />}
-              </div>
-              <span className={cn('text-[0.6rem] uppercase', isToday ? 'text-orange-600 font-semibold' : 'text-muted-foreground')}>
-                {label}
-              </span>
-            </div>
-          );
-        })}
-      </div>
+      <StreakWeekView practiceDates={practiceDates} className="mb-4" />
 
       <p className="text-sm text-muted-foreground leading-relaxed">
         {practicedToday
