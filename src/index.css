@@ -412,3 +412,127 @@
 .prose-article hr {
   @apply border-border my-10;
 }
+
+/* Streak — Duolingo-inspired flame & celebration */
+.streak-card {
+  @apply rounded-xl border border-border bg-card/95 backdrop-blur-sm p-5 shadow-elevated-lg;
+}
+
+.streak-card-flame {
+  @apply flex items-center justify-center w-14 h-14 rounded-full bg-orange-500/10;
+  animation: streak-flicker 1.2s ease-in-out infinite;
+}
+
+.streak-flame-wrap {
+  width: 7rem;
+  height: 7rem;
+}
+
+.streak-flame-glow {
+  position: absolute;
+  inset: -20%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(251, 146, 60, 0.45) 0%, transparent 70%);
+  animation: streak-glow 1.4s ease-in-out infinite;
+}
+
+.streak-flame {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+}
+
+.streak-flame-back {
+  width: 4.5rem;
+  height: 5.5rem;
+  background: linear-gradient(to top, #ea580c, #fbbf24);
+  opacity: 0.85;
+  animation: streak-flame-dance 0.8s ease-in-out infinite alternate;
+}
+
+.streak-flame-front {
+  width: 3rem;
+  height: 4rem;
+  background: linear-gradient(to top, #f97316, #fde047);
+  animation: streak-flame-dance 0.6s ease-in-out infinite alternate-reverse;
+}
+
+.streak-flame-icon {
+  animation: streak-flicker 1s ease-in-out infinite;
+}
+
+.streak-confetti {
+  position: absolute;
+  inset: -2rem;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.streak-confetti-piece {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: hsl(var(--secondary));
+  animation: streak-confetti 1.2s ease-out forwards;
+  animation-delay: calc(var(--i) * 0.04s);
+  transform: rotate(calc(var(--i) * 24deg));
+}
+
+.streak-confetti-piece:nth-child(3n) { background: #f97316; }
+.streak-confetti-piece:nth-child(3n+1) { background: #fbbf24; }
+.streak-confetti-piece:nth-child(3n+2) { background: hsl(var(--primary)); }
+
+@keyframes streak-flicker {
+  0%, 100% { transform: scale(1) rotate(-2deg); opacity: 1; }
+  50% { transform: scale(1.08) rotate(2deg); opacity: 0.92; }
+}
+
+@keyframes streak-flame-dance {
+  0% { transform: translateX(-50%) scaleY(1) scaleX(1); }
+  100% { transform: translateX(-50%) scaleY(1.06) scaleX(0.94); }
+}
+
+@keyframes streak-glow {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+@keyframes streak-pop {
+  0% { opacity: 0; transform: scale(0.85) translateY(12px); }
+  60% { opacity: 1; transform: scale(1.03) translateY(0); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes streak-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(251, 146, 60, 0.35); }
+  50% { box-shadow: 0 0 0 6px rgba(251, 146, 60, 0); }
+}
+
+@keyframes streak-confetti {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(0deg) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(360deg) translateY(calc(-80px - var(--i) * 8px));
+  }
+}
+
+.animate-streak-pop {
+  animation: streak-pop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.animate-streak-flicker {
+  animation: streak-flicker 1.2s ease-in-out infinite;
+}
+
+.animate-streak-pulse {
+  animation: streak-pulse 2s ease-in-out infinite;
+}
+

@@ -15,6 +15,9 @@ interface Profile {
   rating: number;
   wins: number;
   losses: number;
+  current_streak: number;
+  longest_streak: number;
+  last_practice_date: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -28,6 +31,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, displayName?: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<Profile>) => Promise<{ error: any }>;
+  refreshProfile: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: any }>;
 }
 
@@ -175,6 +179,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const refreshProfile = async () => {
+    if (user) {
+      await fetchProfile(user.id);
+    }
+  };
+
   const updateProfile = async (updates: Partial<Profile>) => {
     if (!user) return { error: 'No user logged in' };
 
@@ -220,6 +230,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     signUp,
     signOut,
     updateProfile,
+    refreshProfile,
     resetPassword,
   };
 

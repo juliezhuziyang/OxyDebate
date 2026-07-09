@@ -476,8 +476,11 @@ export type Database = {
           avatar_url: string | null
           bio: string | null
           created_at: string
+          current_streak: number
           display_name: string | null
           id: string
+          last_practice_date: string | null
+          longest_streak: number
           losses: number | null
           rating: number | null
           skill_level: string | null
@@ -492,8 +495,11 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
+          current_streak?: number
           display_name?: string | null
           id?: string
+          last_practice_date?: string | null
+          longest_streak?: number
           losses?: number | null
           rating?: number | null
           skill_level?: string | null
@@ -508,8 +514,11 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
+          current_streak?: number
           display_name?: string | null
           id?: string
+          last_practice_date?: string | null
+          longest_streak?: number
           losses?: number | null
           rating?: number | null
           skill_level?: string | null
@@ -876,6 +885,18 @@ export type Database = {
       }
       increment_user_losses: { Args: { user_id: string }; Returns: undefined }
       increment_user_wins: { Args: { user_id: string }; Returns: undefined }
+      record_practice_and_streak: {
+        Args: {
+          p_completed?: boolean
+          p_duration_seconds: number
+          p_format: string
+          p_practice_date: string
+          p_score?: number | null
+          p_session_type?: string
+          p_topic: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user" | "tournament_admin"

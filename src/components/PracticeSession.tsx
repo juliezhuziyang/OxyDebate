@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Play, Pause, RotateCcw, Clock, Bot, Square, MessageSquare, Save, X, History, Mic, MicOff, Loader2 } from 'lucide-react';
 import { DebateFormat, Speaker, Skill } from './AIPractice';
 import { supabase } from '@/integrations/supabase/client';
+import { useStreak } from '@/hooks/useStreak';
 import { DebateSoFarChart } from './DebateSoFarChart';
 import type { DebateSoFarData } from '@/types/debateContext';
 import { generateDebateSoFarFallback, needsDebateContext, parseDebateSoFarResponse } from '@/utils/debateSoFar';
@@ -38,6 +39,8 @@ interface FeedbackData {
 }
 
 export const PracticeSession = ({ config, onBack }: PracticeSessionProps) => {
+  const { recordPractice } = useStreak();
+  const streakRecordedRef = useRef(false);
   const [timeLeft, setTimeLeft] = useState(config.timeLimit * 60);
   const [isRunning, setIsRunning] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
@@ -354,6 +357,17 @@ export const PracticeSession = ({ config, onBack }: PracticeSessionProps) => {
     setIsRecording(false);
     setSessionEnded(true);
     stopListening();
+
+    if (!streakRecordedRef.current) {
+      streakRecordedRef.current = true;
+      const { timeUsedSeconds } = getSessionTiming();
+      await recordPractice({
+        topic: config.topic,
+        format: config.format,
+        durationSeconds: Math.max(timeUsedSeconds, 30),
+        sessionType: 'ai',
+      });
+    }
 
     const finalTranscript = transcriptRef.current.trim();
     await generateAIFeedback(finalTranscript);

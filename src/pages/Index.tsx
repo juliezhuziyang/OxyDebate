@@ -2,14 +2,17 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useStreak } from '@/hooks/useStreak';
 import { Button } from '@/components/ui/button';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
+import { StreakCard } from '@/components/StreakCelebration';
 import type { Section } from '@/components/Layout';
 import { Announcements } from '@/components/Announcements';
 
 const Index = () => {
   const { user, signOut } = useAuth();
+  const { streak, longestStreak, practicedToday, streakAtRisk } = useStreak();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -66,18 +69,32 @@ const Index = () => {
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
 
         <div className="relative z-10 container mx-auto h-full min-h-[88vh] px-4 lg:px-8 flex items-end pb-16 md:pb-24">
-          <div className="hero-panel opacity-0-start animate-fade-in-up max-w-3xl">
-            <p className="editorial-eyebrow mb-4">Oxymorona Debate Society</p>
-            <div className="hero-accent-line" />
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-semibold leading-[1.05] mb-6">
-              Where conviction meets curiosity.
-            </h1>
-            <p className="text-base md:text-lg text-muted-foreground mb-9 leading-relaxed max-w-xl">
-              Train with AI, spar with real opponents, and climb global rankings — built for debaters who take the craft seriously.
-            </p>
-            <Button size="lg" onClick={handleGetStarted} aria-label="Get started" className="font-medium px-8">
-              Enter the arena
-            </Button>
+          <div className="w-full flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+            <div className="hero-panel opacity-0-start animate-fade-in-up max-w-3xl">
+              <p className="editorial-eyebrow mb-4">Oxymorona Debate Society</p>
+              <div className="hero-accent-line" />
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-semibold leading-[1.05] mb-6">
+                Where conviction meets curiosity.
+              </h1>
+              <p className="text-base md:text-lg text-muted-foreground mb-9 leading-relaxed max-w-xl">
+                Train with AI, spar with real opponents, and climb global rankings — built for debaters who take the craft seriously.
+              </p>
+              <Button size="lg" onClick={handleGetStarted} aria-label="Get started" className="font-medium px-8">
+                Enter the arena
+              </Button>
+            </div>
+
+            {user && (
+              <div className="opacity-0-start animate-fade-in-up w-full max-w-sm lg:mb-2" style={{ animationDelay: '120ms' }}>
+                <StreakCard
+                  streak={streak}
+                  longestStreak={longestStreak}
+                  practicedToday={practicedToday}
+                  streakAtRisk={streakAtRisk}
+                  onPractice={() => navigate('/app?section=practice-home')}
+                />
+              </div>
+            )}
           </div>
         </div>
       </section>

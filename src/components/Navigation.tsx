@@ -3,6 +3,8 @@ import { Section } from './Layout';
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { useStreak } from '@/hooks/useStreak';
+import { StreakBadge } from '@/components/StreakCelebration';
 import { ThemeToggle } from './ThemeToggle';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -17,6 +19,7 @@ interface NavigationProps {
 export const Navigation = ({ activeSection, onSectionChange, isAuthenticated, onLogout }: NavigationProps) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { streak, practicedToday, streakAtRisk } = useStreak();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState<null | 'practice' | 'resource' | 'mydebate'>(null);
   const closeTimeout = useRef<number | null>(null);
@@ -174,6 +177,15 @@ export const Navigation = ({ activeSection, onSectionChange, isAuthenticated, on
             </div>
 
             <div className="flex items-center gap-1.5 pl-4 ml-1 border-l border-border">
+              {isAuthenticated && (
+                <StreakBadge
+                  streak={streak}
+                  practicedToday={practicedToday}
+                  streakAtRisk={streakAtRisk}
+                  size="sm"
+                />
+              )}
+
               <button
                 onClick={goToAnnouncements}
                 className="relative p-2 rounded-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
@@ -206,6 +218,14 @@ export const Navigation = ({ activeSection, onSectionChange, isAuthenticated, on
 
           {/* Mobile Menu Button */}
           <div className="flex items-center gap-1 md:hidden">
+            {isAuthenticated && (
+              <StreakBadge
+                streak={streak}
+                practicedToday={practicedToday}
+                streakAtRisk={streakAtRisk}
+                size="sm"
+              />
+            )}
             <ThemeToggle />
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}

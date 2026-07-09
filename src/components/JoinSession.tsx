@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { ArrowLeft, Crown, Mic, MicOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
+import { useStreak } from '@/hooks/useStreak';
 import { supabase } from '@/integrations/supabase/client';
 import { MeetingControls } from './MeetingControls';
 import { useToast } from '@/hooks/use-toast';
@@ -21,7 +22,10 @@ interface JoinSessionProps {
 
 export const JoinSession = ({ sessionId, onBack, isHost = false }: JoinSessionProps) => {
   const { profile } = useAuth();
+  const { recordPractice } = useStreak();
   const { toast } = useToast();
+  const joinedAtRef = useRef<number | null>(null);
+  const streakRecordedRef = useRef(false);
   const [jitsiApi, setJitsiApi] = useState<any>(null);
   const [isSessionEnded, setIsSessionEnded] = useState(false);
   const jitsiContainer = useRef<HTMLDivElement>(null);
@@ -32,6 +36,46 @@ export const JoinSession = ({ sessionId, onBack, isHost = false }: JoinSessionPr
   const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]);
   const [hasStartedRecording, setHasStartedRecording] = useState(false);
   const [participants, setParticipants] = useState<Participant[]>([]);
+
+  const recordGlobalPracticeStreak = useCallback(async () => {
+    if (streakRecordedRef.current || !profile) return;
+    streakRecordedRef.current = true;
+
+    const durationSeconds = joinedAtRef.current
+      ? Math.max(60, Math.floor((Date.now() - joinedAtRef.current) / 1000))
+      : 60;
+
+    try {
+      const { data: match } = await supabase
+        .from('practice_matches')
+        .select('topic_title, difficulty')
+        .eq('id', sessionId)
+        .maybeSingle();
+
+      await recordPractice({
+        topic: match?.topic_title || 'Global Practice',
+        format: match?.difficulty || 'WSDC',
+        durationSeconds,
+        sessionType: 'global',
+      });
+    } catch (error) {
+      console.error('Error recording global practice streak:', error);
+    }
+  }, [profile, recordPractice, sessionId]);
+
+  const recordStreakRef = useRef(recordGlobalPracticeStreak);
+  recordStreakRef.current = recordGlobalPracticeStreak;
+
+  useEffect(() => {
+    return () => {
+      void recordStreakRef.current();
+    };
+  }, []);
+
+  const handleLeaveSession = async () => {
+    await recordGlobalPracticeStreak();
+    onBack();
+  };
 
   const handleSpeakerAssignment = async (propSpeakers: string[], oppSpeakers: string[]) => {
     try {
@@ -216,6 +260,8 @@ export const JoinSession = ({ sessionId, onBack, isHost = false }: JoinSessionPr
       if (isRecording) {
         stopRecording();
       }
+
+      await recordGlobalPracticeStreak();
       
       // Update session status to 'completed' in database
       await supabase
@@ -265,6 +311,7 @@ export const JoinSession = ({ sessionId, onBack, isHost = false }: JoinSessionPr
 
     const initializeJitsi = async () => {
       if (typeof window !== 'undefined' && (window as any).JitsiMeetExternalAPI && jitsiContainer.current && profile) {
+        joinedAtRef.current = Date.now();
         const roomName = `vpaas-magic-cookie-33efea029781448088cb08c821f698b8/DebatePractice-${sessionId}`;
         
         // Use display name or username as fallback
@@ -423,7 +470,7 @@ export const JoinSession = ({ sessionId, onBack, isHost = false }: JoinSessionPr
       <div className="absolute top-4 left-4 z-10">
         <Button
           variant="secondary"
-          onClick={onBack}
+          onClick={handleLeaveSession}
           className="flex items-center space-x-2 bg-white/90 hover:bg-white text-black"
         >
           <ArrowLeft size={20} />
