@@ -142,7 +142,7 @@ export const RealRankings = () => {
                     {rankings.length === 0 ? (
                       <tr>
                         <td colSpan={5} className="text-center py-8 text-muted-foreground">
-                          No rankings available yet. Start practicing to join the leaderboard!
+                          No players on the leaderboard yet. Sign up to appear here!
                         </td>
                       </tr>
                     ) : (
