@@ -115,7 +115,7 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
             <article className="team-card">
               <div className="flex items-center gap-4 mb-5">
-                <img src="/lovable-uploads/c91fef03-82a7-466d-a99b-55f44262776a.png" alt="Julie Zhu profile photo" className="w-20 h-20 rounded-full border-2 border-primary/20 object-cover shadow-md" loading="lazy" />
+                <img src="/lovable-uploads/julie-zhu.png" alt="Julie Zhu profile photo" className="w-20 h-20 rounded-full border-2 border-primary/20 object-cover shadow-md" loading="lazy" />
                 <div>
                   <h3 className="text-xl font-semibold">Julie Zhu</h3>
                   <p className="text-primary text-sm font-medium">President</p>
