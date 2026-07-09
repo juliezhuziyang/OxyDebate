@@ -7,7 +7,6 @@ import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
 import type { Section } from '@/components/Layout';
 import { Announcements } from '@/components/Announcements';
-import { ChevronDown } from 'lucide-react';
 
 const Index = () => {
   const { user, signOut } = useAuth();
@@ -57,44 +56,42 @@ const Index = () => {
       />
 
       {/* Hero Section */}
-      <section className="relative w-full min-h-[85vh] md:min-h-screen overflow-hidden">
+      <section className="relative w-full min-h-[88vh] overflow-hidden border-b border-border">
         <img
           src="/lovable-uploads/81b3875b-f5ba-4565-873d-48077a07f163.png"
           alt="Students engaged in a debate at Oxymorona Community"
-          className="absolute inset-0 w-full h-full object-cover scale-105"
+          className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/70 to-background/30 dark:from-background/98 dark:via-background/85 dark:to-background/40" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/88 to-background/20 dark:from-background dark:via-background/92 dark:to-background/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
 
-        <div className="relative z-10 container mx-auto h-full min-h-[85vh] md:min-h-screen px-4 lg:px-8 flex items-center">
-          <div className="hero-panel opacity-0-start animate-fade-in-up max-w-2xl">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-5">
-              Oxymorona Debate Community
+        <div className="relative z-10 container mx-auto h-full min-h-[88vh] px-4 lg:px-8 flex items-end pb-16 md:pb-24">
+          <div className="hero-panel opacity-0-start animate-fade-in-up max-w-3xl">
+            <p className="editorial-eyebrow mb-4">Oxymorona Debate Society</p>
+            <div className="hero-accent-line" />
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-semibold leading-[1.05] mb-6">
+              Where conviction meets curiosity.
             </h1>
-            <p className="text-base md:text-lg text-muted-foreground mb-8 leading-relaxed">
-              Where conviction meets curiosity. Train with AI, spar with real opponents, and climb the global rankings. Debate smarter. Win fairer. Grow together.
+            <p className="text-base md:text-lg text-muted-foreground mb-9 leading-relaxed max-w-xl">
+              Train with AI, spar with real opponents, and climb global rankings — built for debaters who take the craft seriously.
             </p>
-            <Button size="lg" variant="gradient" onClick={handleGetStarted} aria-label="Get started" className="font-semibold">
-              Get started
+            <Button size="lg" onClick={handleGetStarted} aria-label="Get started" className="font-medium px-8">
+              Enter the arena
             </Button>
           </div>
         </div>
-
-        <button
-          onClick={() => document.getElementById('announcements')?.scrollIntoView({ behavior: 'smooth' })}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1 text-muted-foreground hover:text-primary transition-colors animate-bounce"
-          aria-label="Scroll to announcements"
-        >
-          <ChevronDown className="h-6 w-6" />
-        </button>
       </section>
 
       <main id="main-content">
         <Announcements />
 
-        <section className="container mx-auto px-4 pb-16 md:pb-24">
-          <div className="text-center mb-12 md:mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold">Meet our team</h2>
+        <section className="container mx-auto px-4 pb-20 md:pb-28">
+          <div className="mb-12 md:mb-16 max-w-2xl">
+            <p className="editorial-eyebrow mb-3">Leadership</p>
+            <h2 className="text-3xl md:text-4xl font-display font-semibold tracking-tight">Meet our team</h2>
+            <p className="text-muted-foreground mt-3 leading-relaxed">
+              The students building a global home for competitive debate.
+            </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
             <article className="team-card">

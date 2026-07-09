@@ -35,7 +35,7 @@
     --input: 36 18% 88%;
     --ring: 355 72% 34%;
 
-    --radius: 0.625rem;
+    --radius: 0.5rem;
 
     --debate-blue: 355 72% 34%;
     --debate-gold: 43 90% 48%;
@@ -110,71 +110,141 @@
 
 @layer components {
   .glass-nav {
-    @apply bg-card/80 backdrop-blur-xl border-b border-border/60 shadow-sm;
+    @apply bg-background/85 backdrop-blur-md border-b border-border/80;
+    box-shadow: 0 1px 0 hsl(var(--foreground) / 0.04);
   }
 
   .glass-card {
-    @apply bg-card/90 backdrop-blur-md border border-border/70 shadow-lg;
+    @apply bg-card border border-border/80;
+    box-shadow: 0 1px 2px hsl(var(--foreground) / 0.04), 0 12px 32px hsl(var(--foreground) / 0.06);
   }
 
   .page-shell {
-    @apply relative min-h-screen;
-    background-image:
-      radial-gradient(ellipse 80% 50% at 50% -20%, hsl(var(--primary) / 0.08), transparent),
-      radial-gradient(ellipse 60% 40% at 100% 100%, hsl(var(--secondary) / 0.06), transparent);
+    @apply relative min-h-screen bg-background;
   }
 
-  .dark .page-shell {
+  .page-shell::before {
+    content: "";
+    pointer-events: none;
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.35;
     background-image:
-      radial-gradient(ellipse 80% 50% at 50% -20%, hsl(var(--primary) / 0.12), transparent),
-      radial-gradient(ellipse 60% 40% at 100% 100%, hsl(var(--secondary) / 0.05), transparent);
+      linear-gradient(hsl(var(--border) / 0.35) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.35) 1px, transparent 1px);
+    background-size: 72px 72px;
+    mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black, transparent);
+  }
+
+  .page-shell > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .editorial-eyebrow {
+    @apply text-[0.68rem] font-semibold uppercase tracking-editorial text-primary;
+  }
+
+  .page-hero {
+    @apply relative border border-border/80 bg-card px-6 py-10 md:px-10 md:py-12;
+    box-shadow: 0 1px 2px hsl(var(--foreground) / 0.04);
+  }
+
+  .page-hero::after {
+    content: "";
+    @apply absolute left-6 md:left-10 top-0 h-px w-16 bg-secondary;
+  }
+
+  .page-hero-compact {
+    @apply py-8 md:py-10;
+  }
+
+  .page-hero-title {
+    @apply mt-4 text-3xl md:text-5xl font-display font-semibold tracking-tight text-foreground max-w-3xl;
+  }
+
+  .page-hero-description {
+    @apply mt-3 text-base md:text-lg text-muted-foreground max-w-2xl leading-relaxed;
+  }
+
+  .page-hero-actions {
+    @apply mt-6 flex flex-wrap gap-3;
   }
 
   .section-label {
-    @apply text-xs font-semibold uppercase tracking-widest text-primary;
+    @apply text-[0.68rem] font-semibold uppercase tracking-editorial text-primary;
   }
 
   .selection-card {
-    @apply p-4 md:p-6 rounded-xl border-2 border-border bg-card text-left transition-all duration-200;
-    @apply hover:border-primary/40 hover:shadow-md;
+    @apply p-4 md:p-5 border border-border bg-card text-left transition-all duration-200;
+    @apply hover:border-primary/35 hover:bg-muted/30;
+    box-shadow: inset 0 1px 0 hsl(var(--foreground) / 0.02);
   }
 
   .selection-card-active {
-    @apply border-primary bg-primary/5 shadow-md ring-1 ring-primary/20;
+    @apply border-primary bg-primary/[0.03];
+    box-shadow: inset 0 0 0 1px hsl(var(--primary) / 0.15);
+  }
+
+  .feature-card {
+    @apply flex flex-col border border-border bg-card overflow-hidden transition-all duration-300;
+    @apply hover:border-primary/30;
+    box-shadow: 0 1px 2px hsl(var(--foreground) / 0.04);
+  }
+
+  .feature-card:hover {
+    box-shadow: 0 8px 28px hsl(var(--foreground) / 0.07);
+    transform: translateY(-2px);
   }
 
   .announcement-card {
-    @apply min-w-[20rem] max-w-[20rem] p-6 rounded-xl border border-border bg-card shadow-sm;
-    @apply hover:shadow-md hover:border-primary/30 transition-all duration-300;
+    @apply min-w-[20rem] max-w-[20rem] p-6 border border-border bg-card;
+    @apply hover:border-primary/30 transition-all duration-300;
     scroll-snap-align: start;
   }
 
   .team-card {
-    @apply p-6 md:p-8 rounded-2xl border border-border bg-card shadow-sm;
-    @apply hover:shadow-lg hover:border-primary/25 transition-all duration-300 hover:-translate-y-0.5;
+    @apply p-6 md:p-8 border border-border bg-card transition-all duration-300;
+    box-shadow: 0 1px 2px hsl(var(--foreground) / 0.04);
+  }
+
+  .team-card:hover {
+    @apply border-primary/25;
+    box-shadow: 0 12px 32px hsl(var(--foreground) / 0.07);
+    transform: translateY(-2px);
   }
 
   .hero-panel {
-    @apply max-w-xl md:max-w-2xl p-6 md:p-10 rounded-2xl glass-card;
+    @apply max-w-xl md:max-w-2xl;
+  }
+
+  .hero-accent-line {
+    @apply h-px w-20 bg-secondary mb-6;
+  }
+
+  .surface-panel {
+    @apply border border-border/80 bg-card p-6 md:p-8;
+    box-shadow: 0 1px 2px hsl(var(--foreground) / 0.04);
   }
 
   .skip-link {
     @apply sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100];
-    @apply focus:px-4 focus:py-2 focus:rounded-md focus:bg-primary focus:text-primary-foreground;
+    @apply focus:px-4 focus:py-2 focus:rounded-sm focus:bg-primary focus:text-primary-foreground;
   }
 }
 
 @layer utilities {
   .debate-gradient {
-    background: linear-gradient(135deg, hsl(var(--debate-blue)) 0%, hsl(var(--debate-light-blue)) 100%);
+    background: hsl(var(--primary));
   }
 
   .gold-gradient {
-    background: linear-gradient(135deg, hsl(var(--debate-gold)) 0%, hsl(38 92% 50%) 100%);
+    background: hsl(var(--secondary));
   }
 
   .text-gradient-brand {
-    @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
+    @apply text-primary;
   }
 
   .hover-lift {

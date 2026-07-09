@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import type { Section } from './Layout';
 import { cn } from '@/lib/utils';
+import { PageHero } from './PageHero';
 
 import aiPracticeImg from '@/assets/section-ai-practice.jpg';
 import globalPracticeImg from '@/assets/section-global-practice.jpg';
@@ -31,51 +32,46 @@ interface SectionHomeProps {
 
 const SectionHome = ({ title, subtitle, heroImage, items, onNavigate }: SectionHomeProps) => {
   return (
-    <div className="space-y-10 md:space-y-14 animate-fade-in">
-      {/* Hero */}
-      <div className="relative rounded-2xl overflow-hidden shadow-elevated-lg">
-        <img src={heroImage} alt={title} className="w-full h-56 md:h-72 object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
-        <div className="absolute bottom-0 left-0 p-6 md:p-10 max-w-2xl">
-          <h1 className="text-3xl md:text-5xl font-bold mb-2">{title}</h1>
-          <p className="text-muted-foreground text-base md:text-lg">{subtitle}</p>
+    <div className="space-y-12 md:space-y-16 animate-fade-in">
+      <div className="relative overflow-hidden border border-border">
+        <img src={heroImage} alt={title} className="w-full h-52 md:h-64 object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/55 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 p-6 md:p-10">
+          <PageHero
+            eyebrow="Section"
+            title={title}
+            description={subtitle}
+            className="border-0 bg-transparent shadow-none p-0 after:hidden"
+          />
         </div>
       </div>
 
-      {/* Card grid */}
       <div className={cn(
-        'grid gap-6',
-        items.length === 1 ? 'grid-cols-1 max-w-2xl' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+        'grid gap-5 md:gap-6',
+        items.length === 1 ? 'grid-cols-1 max-w-3xl' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
       )}>
-        {items.map((item, index) => (
-          <article
-            key={item.id}
-            className={cn(
-              'group flex flex-col rounded-2xl border border-border bg-card overflow-hidden shadow-sm',
-              'hover:shadow-elevated-lg hover:border-primary/30 transition-all duration-300 hover:-translate-y-1',
-              items.length === 1 && 'md:flex-row md:max-w-none'
-            )}
-            style={{ animationDelay: `${index * 0.08}s` }}
-          >
+        {items.map((item) => (
+          <article key={item.id} className={cn('group feature-card', items.length === 1 && 'md:flex-row md:max-w-none')}>
             <div className={cn(
-              'overflow-hidden',
-              items.length === 1 ? 'md:w-2/5 h-48 md:h-auto' : 'h-44'
+              'overflow-hidden bg-muted/30',
+              items.length === 1 ? 'md:w-2/5 h-48 md:h-auto' : 'h-40'
             )}>
               <img
                 src={item.image}
                 alt={item.title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700 ease-out"
                 loading="lazy"
               />
             </div>
             <div className={cn(
-              'flex flex-col flex-1 p-5 md:p-6',
+              'flex flex-col flex-1 p-5 md:p-6 border-t md:border-t-0 md:border-l border-border',
               items.length === 1 && 'md:justify-center'
             )}>
-              <h2 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">{item.title}</h2>
-              <p className="text-muted-foreground text-sm leading-relaxed flex-1 mb-4">{item.description}</p>
-              <Button onClick={() => onNavigate(item.id)} variant="outline" className="gap-2 w-fit group-hover:border-primary group-hover:text-primary">
-                Enter {item.title} <ArrowRight className="w-4 h-4" />
+              <p className="editorial-eyebrow mb-2">Module</p>
+              <h2 className="text-xl font-display font-semibold mb-2 group-hover:text-primary transition-colors">{item.title}</h2>
+              <p className="text-muted-foreground text-sm leading-relaxed flex-1 mb-5">{item.description}</p>
+              <Button onClick={() => onNavigate(item.id)} variant="outline" className="gap-2 w-fit">
+                Open {item.title} <ArrowRight className="w-4 h-4" />
               </Button>
             </div>
           </article>

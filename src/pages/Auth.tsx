@@ -85,7 +85,7 @@ const Auth = () => {
             className="w-full h-full object-cover"
             aria-hidden="true"
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary/75 to-primary/95" />
+          <div className="absolute inset-0 bg-gradient-to-br from-foreground/80 via-foreground/70 to-primary/80" />
         </div>
         <div className="relative z-10">
           <a href="/" className="flex items-center gap-3 text-primary-foreground">
@@ -116,7 +116,7 @@ const Auth = () => {
           <ThemeToggle />
         </div>
         <div className="flex-1 flex items-center justify-center p-4 md:p-8">
-          <Card className="w-full max-w-md border-border/60 shadow-elevated-lg animate-fade-in-up">
+          <Card className="w-full max-w-md border-border shadow-elevated animate-fade-in-up">
             <CardHeader className="space-y-1 text-center pb-2">
               <div className="lg:hidden flex justify-center mb-4">
                 <img
@@ -189,8 +189,7 @@ const Auth = () => {
               <CardFooter className="flex flex-col space-y-3 pt-2">
                 <Button 
                   type="submit" 
-                  variant="gradient"
-                  className="w-full font-semibold" 
+                  className="w-full font-medium" 
                   disabled={loading}
                 >
                   {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

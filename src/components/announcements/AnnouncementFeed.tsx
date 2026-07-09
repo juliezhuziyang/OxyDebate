@@ -9,9 +9,10 @@ import {
   getAnnouncementPreview,
   getDisplayContent,
 } from '@/utils/announcementContent';
-import { ArrowRight, Bell, Megaphone, Plus, Search } from 'lucide-react';
+import { ArrowRight, Bell, Plus, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useMemo, useState } from 'react';
+import { PageHero } from '@/components/PageHero';
 
 interface AnnouncementFeedProps {
   announcements: Announcement[];
@@ -45,28 +46,19 @@ export const AnnouncementFeed = ({
 
   return (
     <div className="space-y-10 md:space-y-12 animate-fade-in">
-      {/* Hero */}
-      <header className="relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-primary/10 via-background to-secondary/5 shadow-elevated-lg">
-        <div className="relative px-6 py-10 md:px-10 md:py-12">
-          <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 text-primary px-3 py-1 text-xs font-medium mb-4">
-            <Megaphone className="w-3.5 h-3.5" />
-            Community updates
-          </div>
-          <h1 className="text-3xl md:text-5xl font-bold font-playfair tracking-tight mb-3">
-            Announcements
-          </h1>
-          <p className="text-muted-foreground text-base md:text-lg max-w-2xl leading-relaxed">
-            News, updates, and important information from the Oxymorona Debate team — written for
-            you to read, not skim.
-          </p>
-          {isAdmin && onCreateClick && (
-            <Button onClick={onCreateClick} className="mt-6 gap-2">
+      <PageHero
+        eyebrow="Community updates"
+        title="Announcements"
+        description="News, updates, and important information from the Oxymorona Debate team — written for you to read, not skim."
+        actions={
+          isAdmin && onCreateClick ? (
+            <Button onClick={onCreateClick} className="gap-2">
               <Plus className="w-4 h-4" />
               New announcement
             </Button>
-          )}
-        </div>
-      </header>
+          ) : undefined
+        }
+      />
 
       {published.length > 0 && (
         <div className="relative max-w-md">
@@ -214,11 +206,11 @@ export const AnnouncementTeaser = ({
   const latest = announcements.filter((a) => a.is_published).slice(0, 3);
 
   return (
-    <section id="announcements" className="container mx-auto px-4 py-16 md:py-20">
+    <section id="announcements" className="container mx-auto px-4 py-16 md:py-24 border-t border-border">
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
         <div>
-          <p className="text-sm font-medium text-primary mb-1">Stay informed</p>
-          <h2 className="text-2xl md:text-3xl font-bold font-playfair">Latest announcements</h2>
+          <p className="editorial-eyebrow mb-2">Stay informed</p>
+          <h2 className="text-2xl md:text-3xl font-display font-semibold tracking-tight">Latest announcements</h2>
         </div>
         <Button variant="outline" asChild className="gap-2 shrink-0">
           <Link to="/announcements">
@@ -241,7 +233,7 @@ export const AnnouncementTeaser = ({
             <Link
               key={a.id}
               to={`/announcements/${a.id}`}
-              className="group block rounded-xl border border-border bg-card p-4 md:p-5 hover:border-primary/30 hover:shadow-sm transition-all"
+              className="group block border border-border bg-card p-4 md:p-5 hover:border-primary/30 transition-all"
             >
               <time className="text-xs text-muted-foreground">
                 {formatAnnouncementDateShort(a.published_at)}

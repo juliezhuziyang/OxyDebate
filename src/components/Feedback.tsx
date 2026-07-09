@@ -36,11 +36,16 @@ export const Feedback = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-4">
-      <h1 className="text-2xl font-bold">Send us your feedback</h1>
-      <p className="text-sm text-muted-foreground">We will forward it to juliezhu.ziyang@gmail.com.</p>
-      <Textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Type your feedback here..." className="min-h-40" />
-      <Button onClick={submit} disabled={loading}>{loading ? 'Sending...' : 'Send feedback'}</Button>
+    <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
+      <div className="border-b border-border pb-6">
+        <p className="editorial-eyebrow mb-2">My Debate</p>
+        <h1 className="text-2xl md:text-3xl font-display font-semibold tracking-tight">Send us your feedback</h1>
+        <p className="text-sm text-muted-foreground mt-2">Help shape the platform — we read every message.</p>
+      </div>
+      <div className="surface-panel space-y-4">
+        <Textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Share ideas, report issues, or suggest improvements..." className="min-h-40 border-border bg-background" />
+        <Button onClick={submit} disabled={loading}>{loading ? 'Sending...' : 'Send feedback'}</Button>
+      </div>
     </div>
   );
 };

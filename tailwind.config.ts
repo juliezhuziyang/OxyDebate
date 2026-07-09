@@ -12,9 +12,9 @@ export default {
   theme: {
     container: {
       center: true,
-      padding: "2rem",
+      padding: "1.5rem",
       screens: {
-        "2xl": "1400px",
+        "2xl": "1280px",
       },
     },
     extend: {
@@ -22,6 +22,9 @@ export default {
         sans: ["DM Sans", "system-ui", "sans-serif"],
         playfair: ["Playfair Display", "Georgia", "serif"],
         display: ["Playfair Display", "Georgia", "serif"],
+      },
+      letterSpacing: {
+        editorial: "0.14em",
       },
       colors: {
         border: "hsl(var(--border))",
@@ -57,21 +60,18 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        sidebar: {
-          DEFAULT: "hsl(var(--sidebar-background))",
-          foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
-          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
-          border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
-        },
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      boxShadow: {
+        elevated:
+          "0 1px 2px hsl(var(--foreground) / 0.04), 0 8px 24px hsl(var(--foreground) / 0.06)",
+        "elevated-lg":
+          "0 2px 4px hsl(var(--foreground) / 0.04), 0 16px 40px hsl(var(--foreground) / 0.08)",
+        insetline: "inset 0 1px 0 hsl(var(--foreground) / 0.04)",
       },
       keyframes: {
         "accordion-down": {

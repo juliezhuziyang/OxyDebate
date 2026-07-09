@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Bot, Clock, Users, Target, ArrowRight, History } from 'lucide-react';
+import { Clock, Users, Target, ArrowRight, History } from 'lucide-react';
 import { TopicSelector } from './TopicSelector';
 import { PracticeSession } from './PracticeSession';
 import { PracticeHistory } from './PracticeHistory';
@@ -84,33 +84,33 @@ export const AIPractice = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-10 animate-fade-in">
-      <div className="text-center space-y-4 pb-2">
-        <div className="flex items-center justify-center space-x-3">
-          <div className="w-14 h-14 debate-gradient rounded-2xl flex items-center justify-center shadow-md">
-            <Bot className="text-primary-foreground" size={26} />
+    <div className="max-w-4xl mx-auto space-y-12 animate-fade-in">
+      <div className="border-b border-border pb-8">
+        <p className="editorial-eyebrow mb-3">Practice</p>
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-display font-semibold tracking-tight">AI Practice Arena</h1>
+            <p className="text-muted-foreground mt-2 max-w-xl leading-relaxed">
+              Configure your format, role, and skill focus — then receive structured coaching on your speech.
+            </p>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold">AI Practice Arena</h1>
+          <Button
+            variant="outline"
+            onClick={() => setCurrentStep('history')}
+            className="gap-2 shrink-0"
+          >
+            <History size={18} />
+            Practice history
+          </Button>
         </div>
-        <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-          Practice with our advanced AI coach and improve your debate skills
-        </p>
-        <Button
-          variant="outline"
-          onClick={() => setCurrentStep('history')}
-          className="gap-2"
-        >
-          <History size={18} />
-          My Practice History
-        </Button>
       </div>
 
-      <div className="grid gap-10">
+      <div className="grid gap-12">
         {/* Format Selection */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold flex items-center gap-2">
-            <Target size={20} className="text-primary" />
-            <span>Select Debate Format</span>
+          <h2 className="text-lg font-display font-semibold flex items-center gap-2">
+            <Target size={18} className="text-primary" />
+            <span>Select debate format</span>
           </h2>
           <div className="grid md:grid-cols-2 gap-4">
             {(['WSDC', 'PF'] as DebateFormat[]).map((format) => (
@@ -221,10 +221,9 @@ export const AIPractice = () => {
         {config.timeLimit && (
           <div className="flex justify-center pt-4">
             <Button
-              variant="gradient"
               size="lg"
               onClick={() => setCurrentStep('topic')}
-              className="gap-2 font-semibold px-8"
+              className="gap-2 font-medium px-8"
             >
               Choose Topic
               <ArrowRight size={20} />

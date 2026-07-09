@@ -14,6 +14,7 @@ import { DebateGuide } from '@/components/DebateGuide';
 import { JoinUs } from '@/components/JoinUs';
 import Tournament from '@/components/Tournament';
 import { PracticeHome, TournamentHome, ResourceHome, MyDebateHome } from './SectionHome';
+import { Footer } from './Footer';
 
 export type Section = 'practice-home' | 'tournament-home' | 'resource-home' | 'mydebate-home' | 'ai-practice' | 'global-practice' | 'rankings' | 'content' | 'tournament' | 'global-news' | 'debate-guide' | 'my-progress' | 'join-us' | 'feedback';
 
@@ -117,9 +118,10 @@ export const Layout = () => {
         isAuthenticated={!!user}
         onLogout={signOut}
       />
-      <main id="main-content" className="container mx-auto px-4 py-8 md:py-10 flex-1 animate-fade-in">
+      <main id="main-content" className="container mx-auto px-4 py-10 md:py-14 flex-1 animate-fade-in">
         {renderSection()}
       </main>
+      <Footer />
     </div>
   );
 };

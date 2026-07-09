@@ -12,9 +12,9 @@ import {
   GraduationCap,
   Plus,
   Search,
-  Sparkles,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { PageHero } from '@/components/PageHero';
 
 interface DebateGuideLibraryProps {
   guides: DebateGuide[];
@@ -48,36 +48,26 @@ export const DebateGuideLibrary = ({
 
   return (
     <div className="space-y-10 md:space-y-14 animate-fade-in">
-      {/* Hero */}
-      <section className="relative overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-primary/10 via-background to-secondary/10 shadow-elevated-lg">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent" />
-        <div className="relative px-6 py-10 md:px-10 md:py-14 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 text-primary px-3 py-1 text-xs font-medium mb-4">
-              <GraduationCap className="w-3.5 h-3.5" />
-              Debate Guide Library
-            </div>
-            <h1 className="text-3xl md:text-5xl font-bold font-playfair tracking-tight mb-3">
-              Learn debate, one topic at a time
-            </h1>
-            <p className="text-muted-foreground text-base md:text-lg leading-relaxed">
-              Curated video lessons with study notes — built for curious debaters who want to go deeper.
-            </p>
+      <PageHero
+        eyebrow="Debate Guide Library"
+        title="Learn debate, one topic at a time"
+        description="Curated video lessons with study notes — built for curious debaters who want to go deeper."
+        actions={
+          <>
             {!loading && publishedCount > 0 && (
-              <p className="text-sm text-muted-foreground mt-4">
-                <Sparkles className="w-4 h-4 inline mr-1.5 text-secondary" />
-                {publishedCount} {publishedCount === 1 ? 'topic' : 'topics'} ready to explore
+              <p className="text-sm text-muted-foreground self-center mr-2">
+                {publishedCount} {publishedCount === 1 ? 'topic' : 'topics'} ready
               </p>
             )}
-          </div>
-          {isAdmin && (
-            <Button onClick={onCreateGuide} size="lg" className="gap-2 shrink-0 shadow-md">
-              <Plus className="w-5 h-5" />
-              New guide
-            </Button>
-          )}
-        </div>
-      </section>
+            {isAdmin && (
+              <Button onClick={onCreateGuide} size="lg" className="gap-2 shrink-0">
+                <Plus className="w-5 h-5" />
+                New guide
+              </Button>
+            )}
+          </>
+        }
+      />
 
       {/* Search */}
       {guides.length > 0 && (

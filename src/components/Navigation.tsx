@@ -74,34 +74,37 @@ export const Navigation = ({ activeSection, onSectionChange, isAuthenticated, on
 
   const navLinkClass = (active: boolean) =>
     cn(
-      'font-display text-sm md:text-base transition-colors inline-flex items-center gap-1',
-      active ? 'text-primary font-medium' : 'text-foreground hover:text-primary'
+      'text-[0.72rem] font-semibold uppercase tracking-editorial transition-colors inline-flex items-center gap-1 py-1',
+      active ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
     );
 
   const dropdownClass =
-    'absolute left-0 mt-2 bg-popover border border-border shadow-elevated-lg rounded-lg py-1.5 w-56 z-50 animate-fade-in';
+    'absolute left-0 mt-3 bg-popover border border-border py-1 w-56 z-50 animate-fade-in shadow-elevated-lg';
 
   const dropdownItemClass =
-    'block w-full text-left px-4 py-2.5 text-sm hover:bg-muted hover:text-primary transition-colors';
+    'block w-full text-left px-4 py-2.5 text-sm text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors';
 
   return (
     <nav className="glass-nav sticky top-0 z-50">
       <a href="#main-content" className="skip-link">Skip to content</a>
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-[4.25rem]">
           {/* Brand */}
-          <a href="/" className="flex items-center gap-2.5 group">
+          <a href="/" className="flex items-center gap-3 group">
             <img
               src="/lovable-uploads/38ceb41b-5f98-475f-8a33-19dc45ce9689.png"
               alt="Oxymorona Debate logo"
-              className="h-9 w-9 object-contain transition-transform group-hover:scale-105"
+              className="h-8 w-8 object-contain"
               loading="lazy"
             />
-            <span className="font-display text-xl md:text-2xl font-semibold">Oxymorona Debate</span>
+            <div className="leading-none">
+              <span className="block font-display text-lg md:text-xl font-semibold tracking-tight">Oxymorona</span>
+              <span className="block text-[0.65rem] uppercase tracking-editorial text-muted-foreground mt-1">Debate Society</span>
+            </div>
           </a>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-6 ml-auto">
+          <div className="hidden md:flex items-center gap-7 ml-auto">
             {/* Practice menu */}
             <div
               className="relative"
@@ -170,10 +173,10 @@ export const Navigation = ({ activeSection, onSectionChange, isAuthenticated, on
               )}
             </div>
 
-            <div className="flex items-center gap-2 pl-2 border-l border-border">
+            <div className="flex items-center gap-1.5 pl-4 ml-1 border-l border-border">
               <button
                 onClick={goToAnnouncements}
-                className="relative p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                className="relative p-2 rounded-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
                 aria-label="View announcements"
               >
                 <Bell className="h-5 w-5" />
@@ -194,8 +197,8 @@ export const Navigation = ({ activeSection, onSectionChange, isAuthenticated, on
                   Logout
                 </button>
               ) : (
-                <Button asChild size="sm" variant="gradient" className="font-medium">
-                  <a href="/auth">Log in / Sign up</a>
+                <Button asChild size="sm" className="font-medium tracking-wide">
+                  <a href="/auth">Sign in</a>
                 </Button>
               )}
             </div>
@@ -279,8 +282,8 @@ export const Navigation = ({ activeSection, onSectionChange, isAuthenticated, on
                   Logout
                 </button>
               ) : (
-                <Button asChild variant="gradient" className="w-full">
-                  <a href="/auth">Log in / Sign up</a>
+                <Button asChild variant="outline" className="w-full">
+                  <a href="/auth">Sign in</a>
                 </Button>
               )}
             </div>
