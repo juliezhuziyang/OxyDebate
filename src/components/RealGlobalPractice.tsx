@@ -1,20 +1,19 @@
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Clock, Users, Globe, Star, Calendar, Play, Trash2, Edit3 } from 'lucide-react';
+import { Clock, Star, Calendar, Play, Trash2, Edit3 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { JoinSession } from './JoinSession';
-import { toZonedTime, fromZonedTime, formatInTimeZone } from 'date-fns-tz';
+import { fromZonedTime, formatInTimeZone } from 'date-fns-tz';
+import { cn } from '@/lib/utils';
+import { PageLoader } from '@/components/ui/page-loader';
 
 interface PracticeMatch {
   id: string;
@@ -433,10 +432,14 @@ export const RealGlobalPractice = () => {
 
   const getLevelColor = (level: string): string => {
     switch (level) {
-      case 'beginner': return 'bg-green-500/20 text-green-300';
-      case 'intermediate': return 'bg-yellow-500/20 text-yellow-300';
-      case 'advanced': return 'bg-red-500/20 text-red-300';
-      default: return 'bg-gray-500/20 text-gray-300';
+      case 'beginner':
+        return 'border-border bg-muted/40 text-foreground';
+      case 'intermediate':
+        return 'border-secondary/40 bg-secondary/10 text-foreground';
+      case 'advanced':
+        return 'border-primary/30 bg-primary/10 text-primary';
+      default:
+        return 'border-border bg-muted/40 text-muted-foreground';
     }
   };
 
@@ -560,464 +563,484 @@ export const RealGlobalPractice = () => {
   }
 
   if (loading) {
-    return (
-      <div className="space-y-6">
-        <div className="text-center">
-          <div className="animate-pulse">Loading practice arena...</div>
-        </div>
-      </div>
-    );
+    return <PageLoader label="Loading practice rooms..." />;
   }
 
+  const difficulties = [
+    { id: 'beginner', label: 'Beginner', hint: 'Warm-up rounds' },
+    { id: 'intermediate', label: 'Intermediate', hint: 'Standard pace' },
+    { id: 'advanced', label: 'Advanced', hint: 'High pressure' },
+  ] as const;
+
   return (
-    <div className="space-y-6">
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-          Global Practice Arena
-        </h1>
-        <p className="text-muted-foreground">
-          Join live debates with debaters from around the world
-        </p>
+    <div className="space-y-8 animate-fade-in max-w-4xl">
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between border-b border-border pb-8">
+        <div className="min-w-0 max-w-2xl">
+          <p className="editorial-eyebrow">Practice</p>
+          <h1 className="mt-2 text-3xl md:text-4xl font-display font-semibold tracking-tight">
+            Global Practice
+          </h1>
+          <p className="mt-2 text-sm md:text-base text-muted-foreground leading-relaxed">
+            Open rooms and scheduled rounds with debaters worldwide.
+          </p>
+        </div>
+        <div className="shrink-0 text-left sm:text-right">
+          <p className="text-[0.68rem] font-semibold uppercase tracking-editorial text-muted-foreground">
+            Open now
+          </p>
+          <p className="mt-1 text-3xl font-display font-semibold tabular-nums text-primary">
+            {matches.length}
+          </p>
+        </div>
+      </header>
+
+      <div className="gp-tab-bar" role="tablist" aria-label="Practice lobby">
+        {(
+          [
+            { id: 'find' as const, label: 'Find' },
+            { id: 'create' as const, label: 'Create' },
+            { id: 'attended' as const, label: 'History' },
+          ]
+        ).map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            role="tab"
+            aria-selected={activeTab === tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={cn('gp-tab', activeTab === tab.id && 'gp-tab-active')}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
-      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'find' | 'create' | 'attended')}>
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="find">Find Sessions</TabsTrigger>
-          <TabsTrigger value="create">Create Session</TabsTrigger>
-          <TabsTrigger value="attended">Attended Sessions</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="find" className="space-y-4">
+      {activeTab === 'find' && (
+        <section className="space-y-4" role="tabpanel">
           {matches.length === 0 ? (
-            <Card className="bg-card/50 backdrop-blur-sm border-border/30">
-              <CardContent className="text-center py-8">
-                <p className="text-muted-foreground">No active sessions. Be the first to create one!</p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid gap-4">
-              {matches.map((session) => (
-                <Card key={session.id} className="bg-card/50 backdrop-blur-sm border-border/30">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg">{session.topic_title}</CardTitle>
-                      <div className="flex items-center gap-2">
-                        <Badge className={getLevelColor(session.difficulty)}>
-                          {session.difficulty}
-                        </Badge>
-                        <Badge variant="outline">
-                          <Clock className="w-3 h-3 mr-1" />
-                          {getTimeUntilStart(session.start_time)}
-                        </Badge>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <Avatar>
-                          <AvatarImage src={session.creator_profile?.avatar_url} />
-                          <AvatarFallback>
-                            {session.creator_profile?.display_name?.[0] || 'U'}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-medium">
-                            {session.creator_profile?.display_name || session.creator_profile?.username}
-                          </p>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Star className="w-3 h-3" />
-                            <span>{session.creator_profile?.rating || 1000}</span>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-2">
-                        {/* Host management buttons */}
-                        {session.creator_user_id === user?.id && session.status === 'waiting' && !session.opponent_user_id && (
-                          <>
-                            {canDeleteSession(session.start_time) && (
-                              <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="gap-2 text-red-500 hover:text-red-400 hover:bg-red-500/10"
-                                  >
-                                    <Trash2 className="w-4 h-4" />
-                                    Delete
-                                  </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>Delete Session</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      Are you sure you want to delete this session? This action cannot be undone and the session will be removed permanently.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction 
-                                      onClick={() => deleteSession(session.id)}
-                                      className="bg-red-600 hover:bg-red-700"
-                                    >
-                                      Delete
-                                    </AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
-                            )}
-                            {canRescheduleSession(session.start_time) && (
-                              <Dialog>
-                                <DialogTrigger asChild>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="gap-2"
-                                    onClick={() => {
-                                      setRescheduleSessionId(session.id);
-                                      // Pre-fill with current time
-                                      if (session.start_time) {
-                                        const easternTimeZone = 'America/New_York';
-                                        const currentTime = formatInTimeZone(new Date(session.start_time), easternTimeZone, "yyyy-MM-dd'T'HH:mm");
-                                        setRescheduleTime(currentTime);
-                                      }
-                                    }}
-                                  >
-                                    <Edit3 className="w-4 h-4" />
-                                    Reschedule
-                                  </Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                  <DialogHeader>
-                                    <DialogTitle>Reschedule Session</DialogTitle>
-                                  </DialogHeader>
-                                  <div className="space-y-4">
-                                    <div className="space-y-2">
-                                      <label className="text-sm font-medium">New Start Time</label>
-                                      <Input
-                                        type="datetime-local"
-                                        value={rescheduleTime}
-                                        onChange={(e) => setRescheduleTime(e.target.value)}
-                                      />
-                                      <p className="text-xs text-muted-foreground">
-                                        All times are in Eastern Time (ET).
-                                      </p>
-                                    </div>
-                                    <div className="flex gap-2 justify-end">
-                                      <Button
-                                        variant="outline"
-                                        onClick={() => {
-                                          setRescheduleSessionId(null);
-                                          setRescheduleTime('');
-                                        }}
-                                      >
-                                        Cancel
-                                      </Button>
-                                      <Button
-                                        onClick={rescheduleSession}
-                                        disabled={!rescheduleTime}
-                                      >
-                                        Reschedule
-                                      </Button>
-                                    </div>
-                                  </div>
-                                </DialogContent>
-                              </Dialog>
-                            )}
-                          </>
-                        )}
-                        
-                        <Button
-                          onClick={() => {
-                            const isCreator = session.creator_user_id === user?.id;
-                            console.log('🔍 START/JOIN SESSION CLICKED:', {
-                              sessionId: session.id,
-                              canJoin: canJoinSession(session.start_time, isCreator, session.status),
-                              isCreator,
-                              userId: user?.id,
-                              creatorId: session.creator_user_id,
-                              startTime: session.start_time,
-                              sessionStatus: session.status,
-                              buttonDisabled: !canJoinSession(session.start_time, isCreator, session.status)
-                            });
-                            if (isCreator) {
-                              console.log('🔍 CREATOR STARTING SESSION');
-                              console.log('🔍 SETTING JOINED SESSION ID TO:', session.id);
-                              setJoinedSessionId(session.id);
-                              console.log('🔍 JOINED SESSION ID SET, should navigate to JoinSession component');
-                            } else {
-                              console.log('🔍 OPPONENT JOINING SESSION');
-                              joinSession(session.id);
-                            }
-                          }}
-                          disabled={!canJoinSession(session.start_time, session.creator_user_id === user?.id, session.status)}
-                          className="gap-2 hover:bg-primary/90 transition-colors"
-                          style={{ 
-                            backgroundColor: !canJoinSession(session.start_time, session.creator_user_id === user?.id, session.status) ? '#666' : '',
-                            cursor: !canJoinSession(session.start_time, session.creator_user_id === user?.id, session.status) ? 'not-allowed' : 'pointer'
-                          }}
-                        >
-                          <Play className="w-4 h-4" />
-                          {session.creator_user_id === user?.id ? 'Start Session' : 'Join Session'}
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </TabsContent>
-
-        <TabsContent value="create" className="space-y-4">
-          <Card className="bg-card/50 backdrop-blur-sm border-border/30">
-            <CardHeader>
-              <CardTitle>Create Practice Session</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Topic *</label>
-                {!showCustomTopic ? (
-                  <Select value={newSession.topic_id} onValueChange={(value) => {
-                    if (value === 'custom') {
-                      setShowCustomTopic(true);
-                      setNewSession(prev => ({
-                        ...prev,
-                        topic_id: '',
-                        topic_title: ''
-                      }));
-                    } else {
-                      const topic = topics.find(t => t.id === value);
-                      setNewSession(prev => ({
-                        ...prev,
-                        topic_id: value,
-                        topic_title: topic?.title || ''
-                      }));
-                    }
-                  }}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a topic" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {topics.map((topic) => (
-                        <SelectItem key={topic.id} value={topic.id}>
-                          {topic.title}
-                        </SelectItem>
-                      ))}
-                      <SelectItem value="custom">
-                        ✏️ Create Custom Topic
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <div className="space-y-2">
-                    <Input
-                      placeholder="Enter your custom topic"
-                      value={newSession.topic_title}
-                      onChange={(e) => setNewSession(prev => ({ ...prev, topic_title: e.target.value }))}
-                    />
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => {
-                        setShowCustomTopic(false);
-                        setNewSession(prev => ({ ...prev, topic_title: '', topic_id: '' }));
-                      }}
-                    >
-                      Back to Topic Selection
-                    </Button>
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Difficulty Level</label>
-                <Select value={newSession.difficulty} onValueChange={(value) => 
-                  setNewSession(prev => ({ ...prev, difficulty: value }))
-                }>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="beginner">Beginner</SelectItem>
-                    <SelectItem value="intermediate">Intermediate</SelectItem>
-                    <SelectItem value="advanced">Advanced</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Start Time *</label>
-                <Input
-                  type="datetime-local"
-                  value={newSession.start_time}
-                  onChange={(e) => setNewSession(prev => ({ ...prev, start_time: e.target.value }))}
-                />
-                <p className="text-xs text-muted-foreground">
-                  All times are in Eastern Time (ET). Select when the debate should start.
-                </p>
-              </div>
-
-              <Button 
-                disabled={!newSession.topic_title || !newSession.difficulty || !newSession.start_time}
-                onClick={() => {
-                console.error('🚨 CREATE SESSION BUTTON CLICKED! 🚨');
-                console.log('Form data check:', {
-                  user: !!user,
-                  topic_title: newSession.topic_title,
-                  difficulty: newSession.difficulty,
-                  start_time: newSession.start_time,
-                  showCustomTopic,
-                  buttonDisabled: !newSession.topic_title || !newSession.difficulty || !newSession.start_time
-                });
-                createSession();
-              }} className="w-full">
-                Create Session
+            <div className="gp-empty">
+              <h2 className="text-xl font-display font-semibold">No open sessions</h2>
+              <p className="mt-2 text-sm text-muted-foreground max-w-md leading-relaxed">
+                Be the first on the board — set a topic and start time, then wait for an opponent.
+              </p>
+              <Button className="mt-6" onClick={() => setActiveTab('create')}>
+                Create a session
               </Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="attended" className="space-y-4">
-          {attendedSessions.length === 0 ? (
-            <Card className="bg-card/50 backdrop-blur-sm border-border/30">
-              <CardContent className="text-center py-8">
-                <p className="text-muted-foreground">No attended sessions yet. Join some debates to see them here!</p>
-              </CardContent>
-            </Card>
+            </div>
           ) : (
-            <div className="grid gap-4">
-              {attendedSessions.map((session) => (
-                <Card key={session.id} className="bg-card/50 backdrop-blur-sm border-border/30">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg">{session.topic_title}</CardTitle>
-                      <div className="flex items-center gap-2">
-                        <Badge className={getLevelColor(session.difficulty)}>
-                          {session.difficulty}
-                        </Badge>
-                        {session.winner_user_id === user?.id && (
-                          <Badge className="bg-green-500/20 text-green-300">Won</Badge>
-                        )}
-                        {session.winner_user_id && session.winner_user_id !== user?.id && (
-                          <Badge className="bg-red-500/20 text-red-300">Lost</Badge>
-                        )}
-                      </div>
-                    </div>
-                  </CardHeader>
-                  
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-2">
-                          <Avatar className="w-8 h-8">
+            <div className="space-y-3">
+              {matches.map((session) => {
+                const isCreator = session.creator_user_id === user?.id;
+                const canJoin = canJoinSession(session.start_time, isCreator, session.status);
+                const showHostActions =
+                  isCreator && session.status === 'waiting' && !session.opponent_user_id;
+
+                return (
+                  <article key={session.id} className="gp-session-row">
+                    <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                      <div className="min-w-0 flex-1 space-y-3">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Badge variant="outline" className={cn('capitalize', getLevelColor(session.difficulty))}>
+                            {session.difficulty}
+                          </Badge>
+                          <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                            <Clock className="w-3.5 h-3.5" />
+                            {getTimeUntilStart(session.start_time)}
+                          </span>
+                        </div>
+                        <h2 className="text-lg md:text-xl font-display font-semibold tracking-tight leading-snug">
+                          {session.topic_title}
+                        </h2>
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-9 w-9 border border-border">
                             <AvatarImage src={session.creator_profile?.avatar_url} />
                             <AvatarFallback className="text-xs">
                               {session.creator_profile?.display_name?.[0] || 'U'}
                             </AvatarFallback>
                           </Avatar>
-                          <span className="text-sm">
-                            {session.creator_user_id === user?.id ? 'You' : 
-                             session.creator_profile?.display_name || session.creator_profile?.username}
-                          </span>
-                        </div>
-                        <span className="text-muted-foreground">vs</span>
-                        <div className="flex items-center gap-2">
-                          <Avatar className="w-8 h-8">
-                            <AvatarImage src={session.opponent_profile?.avatar_url} />
-                            <AvatarFallback className="text-xs">
-                              {session.opponent_profile?.display_name?.[0] || 'U'}
-                            </AvatarFallback>
-                          </Avatar>
-                          <span className="text-sm">
-                            {session.opponent_user_id === user?.id ? 'You' : 
-                             session.opponent_profile?.display_name || session.opponent_profile?.username}
-                          </span>
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium truncate">
+                              {isCreator
+                                ? 'You (host)'
+                                : session.creator_profile?.display_name ||
+                                  session.creator_profile?.username ||
+                                  'Host'}
+                            </p>
+                            <p className="text-xs text-muted-foreground inline-flex items-center gap-1">
+                              <Star className="w-3 h-3" />
+                              {session.creator_profile?.rating || 1000}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                      
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Calendar className="w-4 h-4" />
-                        <span>{new Date(session.end_time || session.created_at).toLocaleDateString()}</span>
-                      </div>
-                    </div>
-                    
-                    <div className="flex justify-end">
-                      {session.recording_url ? (
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="gap-2"
-                          onClick={async () => {
-                            // Get the public URL from Supabase storage
-                            const { data } = supabase.storage
-                              .from('audio-posts')
-                              .getPublicUrl(session.recording_url);
-                            
-                            const videoElement = document.createElement('video');
-                            videoElement.src = data.publicUrl;
-                            videoElement.controls = true;
-                            videoElement.style.width = '100%';
-                            videoElement.style.maxWidth = '800px';
-                            videoElement.style.height = 'auto';
-                            
-                            const modal = document.createElement('div');
-                            modal.style.position = 'fixed';
-                            modal.style.top = '0';
-                            modal.style.left = '0';
-                            modal.style.width = '100%';
-                            modal.style.height = '100%';
-                            modal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-                            modal.style.display = 'flex';
-                            modal.style.alignItems = 'center';
-                            modal.style.justifyContent = 'center';
-                            modal.style.zIndex = '1000';
-                            modal.style.padding = '20px';
-                            
-                            const closeButton = document.createElement('button');
-                            closeButton.innerHTML = '✕';
-                            closeButton.style.position = 'absolute';
-                            closeButton.style.top = '20px';
-                            closeButton.style.right = '20px';
-                            closeButton.style.background = 'white';
-                            closeButton.style.border = 'none';
-                            closeButton.style.borderRadius = '50%';
-                            closeButton.style.width = '40px';
-                            closeButton.style.height = '40px';
-                            closeButton.style.fontSize = '20px';
-                            closeButton.style.cursor = 'pointer';
-                            closeButton.onclick = () => document.body.removeChild(modal);
-                            
-                            modal.appendChild(videoElement);
-                            modal.appendChild(closeButton);
-                            modal.onclick = (e) => {
-                              if (e.target === modal) {
-                                document.body.removeChild(modal);
-                              }
-                            };
-                            
-                            document.body.appendChild(modal);
+
+                      <div className="flex flex-col gap-2 shrink-0 md:items-end">
+                        <Button
+                          onClick={() => {
+                            if (isCreator) {
+                              setJoinedSessionId(session.id);
+                            } else {
+                              joinSession(session.id);
+                            }
                           }}
+                          disabled={!canJoin}
+                          className="gap-2 w-full md:w-auto"
                         >
-                          <Play className="w-3 h-3" />
-                          Watch Recording
+                          <Play className="w-4 h-4" />
+                          {isCreator ? 'Start' : 'Join'}
                         </Button>
-                      ) : (
-                        <Button variant="outline" size="sm" className="gap-2" disabled>
-                          <Play className="w-3 h-3" />
-                          No Recording
-                        </Button>
-                      )}
+                        {!canJoin && !isCreator && (
+                          <p className="text-xs text-muted-foreground md:text-right max-w-[12rem]">
+                            Opens near the scheduled start
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
+
+                    {showHostActions && (
+                      <div className="mt-4 pt-4 border-t border-border flex flex-wrap gap-2">
+                        {canRescheduleSession(session.start_time) && (
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="gap-2"
+                                onClick={() => {
+                                  setRescheduleSessionId(session.id);
+                                  if (session.start_time) {
+                                    const easternTimeZone = 'America/New_York';
+                                    const current =
+                                      formatInTimeZone(
+                                        new Date(session.start_time),
+                                        easternTimeZone,
+                                        "yyyy-MM-dd'T'HH:mm"
+                                      );
+                                    setRescheduleTime(current);
+                                  }
+                                }}
+                              >
+                                <Edit3 className="w-3.5 h-3.5" />
+                                Reschedule
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Reschedule Session</DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-4">
+                                <div className="space-y-2">
+                                  <label className="text-sm font-medium">New start time</label>
+                                  <Input
+                                    type="datetime-local"
+                                    value={rescheduleTime}
+                                    onChange={(e) => setRescheduleTime(e.target.value)}
+                                  />
+                                  <p className="text-xs text-muted-foreground">
+                                    All times are in Eastern Time (ET).
+                                  </p>
+                                </div>
+                                <div className="flex gap-2 justify-end">
+                                  <Button
+                                    variant="outline"
+                                    onClick={() => {
+                                      setRescheduleSessionId(null);
+                                      setRescheduleTime('');
+                                    }}
+                                  >
+                                    Cancel
+                                  </Button>
+                                  <Button onClick={rescheduleSession} disabled={!rescheduleTime}>
+                                    Reschedule
+                                  </Button>
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                        )}
+                        {canDeleteSession(session.start_time) && (
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                                Delete
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Delete Session</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Are you sure you want to delete this session? This cannot be undone.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => deleteSession(session.id)}
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        )}
+                      </div>
+                    )}
+                  </article>
+                );
+              })}
             </div>
           )}
-        </TabsContent>
-      </Tabs>
+        </section>
+      )}
+
+      {activeTab === 'create' && (
+        <section className="surface-panel space-y-6 max-w-xl" role="tabpanel">
+          <div>
+            <h2 className="text-xl font-display font-semibold">Create a session</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Pick a topic, level, and start time. Opponents can join near that time.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Topic</label>
+            {!showCustomTopic ? (
+              <Select
+                value={newSession.topic_id}
+                onValueChange={(value) => {
+                  if (value === 'custom') {
+                    setShowCustomTopic(true);
+                    setNewSession((prev) => ({
+                      ...prev,
+                      topic_id: '',
+                      topic_title: '',
+                    }));
+                  } else {
+                    const topic = topics.find((t) => t.id === value);
+                    setNewSession((prev) => ({
+                      ...prev,
+                      topic_id: value,
+                      topic_title: topic?.title || '',
+                    }));
+                  }
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a topic" />
+                </SelectTrigger>
+                <SelectContent>
+                  {topics.map((topic) => (
+                    <SelectItem key={topic.id} value={topic.id}>
+                      {topic.title}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="custom">Create custom topic</SelectItem>
+                </SelectContent>
+              </Select>
+            ) : (
+              <div className="space-y-2">
+                <Input
+                  placeholder="Enter your custom topic"
+                  value={newSession.topic_title}
+                  onChange={(e) =>
+                    setNewSession((prev) => ({ ...prev, topic_title: e.target.value }))
+                  }
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setShowCustomTopic(false);
+                    setNewSession((prev) => ({ ...prev, topic_title: '', topic_id: '' }));
+                  }}
+                >
+                  Back to topic list
+                </Button>
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-3">
+            <label className="text-sm font-medium">Difficulty</label>
+            <div className="grid sm:grid-cols-3 gap-3">
+              {difficulties.map((level) => (
+                <button
+                  key={level.id}
+                  type="button"
+                  onClick={() => setNewSession((prev) => ({ ...prev, difficulty: level.id }))}
+                  className={cn(
+                    'selection-card py-4',
+                    newSession.difficulty === level.id && 'selection-card-active'
+                  )}
+                >
+                  <p className="font-medium text-sm">{level.label}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{level.hint}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Start time</label>
+            <Input
+              type="datetime-local"
+              value={newSession.start_time}
+              onChange={(e) => setNewSession((prev) => ({ ...prev, start_time: e.target.value }))}
+            />
+            <p className="text-xs text-muted-foreground">
+              All times are in Eastern Time (ET).
+            </p>
+          </div>
+
+          <Button
+            disabled={!newSession.topic_title || !newSession.difficulty || !newSession.start_time}
+            onClick={() => createSession()}
+            className="w-full"
+          >
+            Create session
+          </Button>
+        </section>
+      )}
+
+      {activeTab === 'attended' && (
+        <section className="space-y-4" role="tabpanel">
+          {attendedSessions.length === 0 ? (
+            <div className="gp-empty">
+              <h2 className="text-xl font-display font-semibold">No sessions yet</h2>
+              <p className="mt-2 text-sm text-muted-foreground max-w-md leading-relaxed">
+                Join an open room or create one — your past rounds will show up here.
+              </p>
+              <Button className="mt-6" variant="outline" onClick={() => setActiveTab('find')}>
+                Browse open sessions
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {attendedSessions.map((session) => {
+                const outcome =
+                  session.winner_user_id === user?.id
+                    ? 'Won'
+                    : session.winner_user_id
+                      ? 'Lost'
+                      : null;
+
+                return (
+                  <article key={session.id} className="gp-session-row">
+                    <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                      <div className="min-w-0 flex-1 space-y-3">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Badge variant="outline" className={cn('capitalize', getLevelColor(session.difficulty))}>
+                            {session.difficulty}
+                          </Badge>
+                          {outcome && (
+                            <span className="text-xs font-medium uppercase tracking-editorial text-muted-foreground">
+                              {outcome}
+                            </span>
+                          )}
+                        </div>
+                        <h2 className="text-lg md:text-xl font-display font-semibold tracking-tight leading-snug">
+                          {session.topic_title}
+                        </h2>
+                        <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                          <span className="truncate">
+                            {session.creator_user_id === user?.id
+                              ? 'You'
+                              : session.creator_profile?.display_name ||
+                                session.creator_profile?.username ||
+                                'Host'}
+                          </span>
+                          <span>vs</span>
+                          <span className="truncate">
+                            {session.opponent_user_id === user?.id
+                              ? 'You'
+                              : session.opponent_profile?.display_name ||
+                                session.opponent_profile?.username ||
+                                'Opponent'}
+                          </span>
+                          <span className="inline-flex items-center gap-1 ml-1">
+                            <Calendar className="w-3.5 h-3.5" />
+                            {new Date(session.end_time || session.created_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="shrink-0">
+                        {session.recording_url ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="gap-2"
+                            onClick={async () => {
+                              const { data } = supabase.storage
+                                .from('audio-posts')
+                                .getPublicUrl(session.recording_url);
+
+                              const videoElement = document.createElement('video');
+                              videoElement.src = data.publicUrl;
+                              videoElement.controls = true;
+                              videoElement.style.width = '100%';
+                              videoElement.style.maxWidth = '800px';
+                              videoElement.style.height = 'auto';
+
+                              const modal = document.createElement('div');
+                              modal.style.position = 'fixed';
+                              modal.style.top = '0';
+                              modal.style.left = '0';
+                              modal.style.width = '100%';
+                              modal.style.height = '100%';
+                              modal.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+                              modal.style.display = 'flex';
+                              modal.style.alignItems = 'center';
+                              modal.style.justifyContent = 'center';
+                              modal.style.zIndex = '1000';
+                              modal.style.padding = '20px';
+
+                              const closeButton = document.createElement('button');
+                              closeButton.innerHTML = '✕';
+                              closeButton.style.position = 'absolute';
+                              closeButton.style.top = '20px';
+                              closeButton.style.right = '20px';
+                              closeButton.style.background = 'white';
+                              closeButton.style.border = 'none';
+                              closeButton.style.borderRadius = '50%';
+                              closeButton.style.width = '40px';
+                              closeButton.style.height = '40px';
+                              closeButton.style.fontSize = '20px';
+                              closeButton.style.cursor = 'pointer';
+                              closeButton.onclick = () => document.body.removeChild(modal);
+
+                              modal.appendChild(videoElement);
+                              modal.appendChild(closeButton);
+                              modal.onclick = (e) => {
+                                if (e.target === modal) {
+                                  document.body.removeChild(modal);
+                                }
+                              };
+
+                              document.body.appendChild(modal);
+                            }}
+                          >
+                            <Play className="w-3 h-3" />
+                            Watch recording
+                          </Button>
+                        ) : (
+                          <p className="text-xs text-muted-foreground md:text-right">No recording</p>
+                        )}
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </section>
+      )}
     </div>
   );
 };
